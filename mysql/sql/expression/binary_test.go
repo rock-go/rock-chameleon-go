@@ -17,7 +17,7 @@ package expression
 import (
 	"testing"
 
-	"github.com/dolthub/vitess/go/vt/proto/query"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/query"
 	"github.com/stretchr/testify/require"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"

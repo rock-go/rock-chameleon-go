@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dolthub/vitess/go/sqltypes"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/sqltypes"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

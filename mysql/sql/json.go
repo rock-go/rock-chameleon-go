@@ -17,8 +17,8 @@ package sql
 import (
 	"encoding/json"
 
-	"github.com/dolthub/vitess/go/sqltypes"
-	"github.com/dolthub/vitess/go/vt/proto/query"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/sqltypes"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/query"
 	"gopkg.in/src-d/go-errors.v1"
 )
 

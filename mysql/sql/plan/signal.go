@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dolthub/vitess/go/mysql"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 )

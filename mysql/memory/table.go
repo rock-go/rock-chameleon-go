@@ -23,7 +23,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dolthub/vitess/go/sqltypes"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/sqltypes"
 	errors "gopkg.in/src-d/go-errors.v1"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"

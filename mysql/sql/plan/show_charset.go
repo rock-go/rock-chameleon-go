@@ -15,7 +15,7 @@
 package plan
 
 import (
-	"github.com/dolthub/vitess/go/sqltypes"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/sqltypes"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 )

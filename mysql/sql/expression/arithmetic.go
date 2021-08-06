@@ -20,7 +20,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dolthub/vitess/go/vt/sqlparser"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/sqlparser"
 	errors "gopkg.in/src-d/go-errors.v1"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dolthub/vitess/go/mysql"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

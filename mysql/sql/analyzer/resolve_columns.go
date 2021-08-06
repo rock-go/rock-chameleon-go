@@ -19,7 +19,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dolthub/vitess/go/vt/sqlparser"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/sqlparser"
 	"gopkg.in/src-d/go-errors.v1"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/internal/similartext"

@@ -25,7 +25,7 @@ import (
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 
-	"github.com/dolthub/vitess/go/mysql"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 	"gopkg.in/src-d/go-errors.v1"
 )
 

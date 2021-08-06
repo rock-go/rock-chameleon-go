@@ -17,7 +17,7 @@ package auth
 import (
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 
-	"github.com/dolthub/vitess/go/mysql"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 )
 
 // None is an Auth method that always succeeds.

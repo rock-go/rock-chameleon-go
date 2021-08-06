@@ -22,7 +22,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/dolthub/vitess/go/vt/sqlparser"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/sqlparser"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql/expression"

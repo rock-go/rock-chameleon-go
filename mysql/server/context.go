@@ -18,7 +18,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dolthub/vitess/go/mysql"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 	"github.com/opentracing/opentracing-go"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"

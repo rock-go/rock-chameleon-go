@@ -23,7 +23,7 @@ import (
 	otlog "github.com/opentracing/opentracing-go/log"
 	errors "gopkg.in/src-d/go-errors.v1"
 
-	"github.com/dolthub/vitess/go/vt/log"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/log"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql/expression"
 	"github.com/rock-go/rock/audit"

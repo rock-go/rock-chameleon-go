@@ -17,8 +17,8 @@ package sql
 import (
 	"strconv"
 
-	"github.com/dolthub/vitess/go/sqltypes"
-	"github.com/dolthub/vitess/go/vt/proto/query"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/sqltypes"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/query"
 )
 
 // systemUintType is an internal unsigned integer type ONLY for system variables.
