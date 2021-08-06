@@ -6,9 +6,6 @@ import (
 	"encoding/binary"
 
 	"golang.org/x/crypto/ssh"
-	"os"
-	"syscall"
-	"unsafe"
 )
 
 func generateSigner() (ssh.Signer, error) {
@@ -40,11 +37,6 @@ func parsePtyRequest(s []byte) (pty Pty, ok bool) {
 		},
 	}
 	return
-}
-
-func setWinsize(f *os.File, w, h int) {
-	syscall.Syscall(syscall.SYS_IOCTL, f.Fd(), uintptr(syscall.TIOCSWINSZ),
-		uintptr(unsafe.Pointer(&struct{ h, w, x, y uint16 }{uint16(h), uint16(w), 0, 0})))
 }
 
 func parseWinchRequest(s []byte) (win Window, ok bool) {
