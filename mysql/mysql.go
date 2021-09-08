@@ -29,6 +29,7 @@ func newGoMysql(cfg *config) *GoMysql {
 	return m
 }
 
+
 func (m *GoMysql) Name() string {
 	return m.cfg.Name
 }
@@ -59,3 +60,4 @@ func (m *GoMysql) Close() error {
 	m.cancel()
 	return m.ser.Close()
 }
+

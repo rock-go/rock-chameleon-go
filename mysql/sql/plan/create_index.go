@@ -23,11 +23,10 @@ import (
 	otlog "github.com/opentracing/opentracing-go/log"
 	errors "gopkg.in/src-d/go-errors.v1"
 
-	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/log"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql/expression"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/log"
 	"github.com/rock-go/rock/audit"
-	"github.com/rock-go/rock/audit/event"
 )
 
 var (
@@ -179,12 +178,12 @@ func (c *CreateIndex) RowIter(ctx *sql.Context, row sql.Row) (sql.RowIter, error
 		return nil, err
 	}
 
-	audit.Put(event.New("honey_mysql_row",
-		event.Subject("honey mysql row"),
-		event.User(ctx.Session.Client().User),
-		event.Addr(ctx.Client().Address),
-		event.Infof("id: %s , driver:%s", index.ID(), index.Driver()),
-	))
+	audit.New("honey_mysql_row",
+		audit.Subject("honey mysql row"),
+		audit.User(ctx.Session.Client().User),
+		audit.Remote(ctx.Client().Address),
+		audit.Msg("id: %s , driver:%s", index.ID(), index.Driver()),
+	)
 
 	createIndex := func() {
 		c.createIndex(ctx, driver, index, iter, created, ready)

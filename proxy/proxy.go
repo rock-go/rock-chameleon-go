@@ -3,7 +3,6 @@ package proxy
 import (
 	"context"
 	"github.com/rock-go/rock/audit"
-	"github.com/rock-go/rock/audit/event"
 	"github.com/rock-go/rock/logger"
 	"github.com/rock-go/rock/lua"
 	"net"
@@ -57,30 +56,27 @@ func (p *proxyGo) handle(src net.Conn) {
 	var dst net.Conn
 	src_addr := src.RemoteAddr().String()
 
-	//链接失败告警
+	ev := audit.NewEvent(p.Type(),
+		audit.Subject("%s命中%s蜜罐" , src_addr , p.Name() ),
+		audit.Remote(src_addr))
+
+		//链接失败告警
 	dst, err = net.Dial(p.cfg.Protocol, p.cfg.Remote)
 	if err != nil {
-		audit.Put(event.New(p.Name(), event.Addr(src_addr),
-			event.Subject("%s 访问蜜罐失败", src_addr),
-			event.ERR(err), event.Infof("服务端口:%s 后端地址:%s 链接失败", p.cfg.Bind, p.cfg.Remote)))
+		ev.Set(audit.Msg("服务端口:%s 后端地址:%s 链接失败", p.cfg.Bind, p.cfg.Remote))
+		audit.Put(ev)
 		return
 	}
 	//关闭
+	ev.Set(audit.Msg("服务端口:%s 后端地址:%s 会话端口:%s 链接成功",
+		p.cfg.Bind, p.cfg.Remote, dst.RemoteAddr().String()))
+	audit.Put(ev)
+
 	defer dst.Close()
-
-	//链接成功
-	audit.Put(event.New(p.Name(), event.Addr(src.RemoteAddr().String()),
-		event.Subject("%s 访问蜜罐成功", src_addr),
-		event.Infof("服务端口:%s 后端地址:%s 会话端口:%s 链接成功",
-			p.cfg.Bind, p.cfg.Remote, dst.RemoteAddr().String())))
-
 	//结束告警
 	defer func() {
-		audit.Put(event.New(p.Name(), event.Addr(src.RemoteAddr().String()),
-			event.Subject("%s 关闭蜜罐请求", src_addr),
-			event.Infof("服务地址:%s 后端:%s 会话端口:%s 结束",
-				p.cfg.Bind, p.cfg.Remote, dst.LocalAddr().String()),
-			event.ERR(err)))
+		audit.New(p.Type(), audit.Remote(src_addr), audit.Subject("%s结束%s蜜罐", src_addr, p.Name()),
+			audit.Msg("服务地址:%s 后端:%s 会话端口:%s 结束", p.cfg.Bind, p.cfg.Remote, dst.LocalAddr().String()))
 	}()
 
 	flow := newFlowGo(src, dst)

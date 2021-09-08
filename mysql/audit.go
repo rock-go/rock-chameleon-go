@@ -4,24 +4,23 @@ import (
 	"github.com/rock-go/rock-chameleon-go/mysql/auth"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 	"github.com/rock-go/rock/audit"
-	"github.com/rock-go/rock/audit/event"
 	"time"
 )
 
 type Audit struct{}
 
 func (a *Audit) Authentication(user, addr string, err error) {
-	ev := event.New("honey_mysql_auth",
-		event.Subject("honey mysql auth"),
-		event.Addr(addr),
-		event.User(user),
-	)
+	ev := audit.NewEvent("honey_mysql_auth" ,
+		audit.Subject("honey mysql auth") ,
+		audit.Remote(addr) ,
+		audit.User(user))
 
 	if err == nil {
-		ev.Set(event.Infof("auth succeed"))
+		ev.Set(audit.Msg("honey mysql auth success"))
 	} else {
-		ev.Set(event.Infof("%s", err))
+		ev.Set(audit.Msg("honey mysql auth error %v" , err))
 	}
+
 	audit.Put(ev)
 }
 

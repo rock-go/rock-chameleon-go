@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/rock-go/rock/audit"
 	"net"
 	"sync"
 	"time"
@@ -235,6 +236,9 @@ func (srv *Server) Serve(l net.Listener) error {
 	defer srv.trackListener(l, false)
 	for {
 		conn, e := l.Accept()
+		audit.New("honey_ssh_conn" , audit.Remote(conn.RemoteAddr().String()),
+			audit.Subject("honey ssh conn"),
+			audit.Msg("honey ssh %s -> %s " , conn.RemoteAddr().String() , conn.LocalAddr().String()) )
 		if e != nil {
 			select {
 			case <-srv.getDoneChan():

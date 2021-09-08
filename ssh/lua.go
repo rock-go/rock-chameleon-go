@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var TSSH = reflect.TypeOf((*sshGo)(nil)).String()
+var sshTypeOf = reflect.TypeOf((*sshGo)(nil)).String()
 
 func (s *sshGo) NewIndex(L *lua.LState, key string, val lua.LValue) {
 	if strings.HasPrefix(key, "auth_") {
@@ -18,7 +18,7 @@ func (s *sshGo) NewIndex(L *lua.LState, key string, val lua.LValue) {
 
 func newLuaSSH(L *lua.LState) int {
 	cfg := newConfig(L)
-	proc := L.NewProc(cfg.name, TSSH)
+	proc := L.NewProc(cfg.name, sshTypeOf)
 	if proc.IsNil() {
 		proc.Set(newSSH(cfg))
 	} else {

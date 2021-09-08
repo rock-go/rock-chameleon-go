@@ -23,12 +23,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/go-kit/kit/metrics/discard"
+	"github.com/opentracing/opentracing-go"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/netutil"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/sqltypes"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/query"
-	"github.com/go-kit/kit/metrics/discard"
-	"github.com/opentracing/opentracing-go"
 	"gopkg.in/src-d/go-errors.v1"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/auth"
@@ -39,7 +39,6 @@ import (
 	"github.com/rock-go/rock-chameleon-go/mysql/sql/parse"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql/plan"
 	"github.com/rock-go/rock/audit"
-	"github.com/rock-go/rock/audit/event"
 	"github.com/rock-go/rock/logger"
 )
 
@@ -78,10 +77,10 @@ func NewHandler(e *sqle.Engine, sm *SessionManager, rt time.Duration) *Handler {
 
 // NewConnection reports that a new connection has been established.
 func (h *Handler) NewConnection(c *mysql.Conn) {
-	ev := event.New("honey_mysql_conn",
-		event.Subject("mysql honey pot conn"),
-		event.Addr(c.Conn.RemoteAddr().String()),
-		event.Infof("client id: %s", c.ConnectionID))
+	ev := audit.NewEvent("honey_mysql_conn",
+		audit.Subject("honey mysql conn"),
+		audit.Remote(c.Conn.RemoteAddr().String()),
+		audit.Msg("client id: %s" , c.ConnectionID))
 
 	audit.Put(ev)
 }
@@ -115,20 +114,20 @@ func (h *Handler) ConnectionClosed(c *mysql.Conn) {
 	ctx, _ := h.sm.NewContextWithQuery(c, "")
 	h.sm.CloseConn(c)
 
-	ev := event.New("honey_mysql_close",
-		event.Subject("honey mysql close"),
-		event.User(c.User),
-		event.Addr(c.Conn.RemoteAddr().String()),
-	)
+	ev := audit.NewEvent("honey_mysql_close",
+		audit.Subject("honey mysql close"),
+		audit.User(c.User),
+		audit.Remote(c.Conn.RemoteAddr().String()))
+
 	// If connection was closed, kill its associated queries.
 	h.e.Catalog.ProcessList.Kill(c.ConnectionID)
 	if err := h.e.Catalog.UnlockTables(ctx, c.ConnectionID); err != nil {
 		logger.Errorf("unable to unlock tables on session close: %s", err)
-		ev.Set(event.ERR(err), event.Infof("unable to unlock tables on session close"))
+		ev.Set(audit.Msg("unable to unlock tables on session close"))
 		goto done
 	}
 
-	ev.Set(event.Infof("client id: %d close", c.ConnectionID))
+	ev.Set(audit.Msg("client id: %d close", c.ConnectionID))
 
 done:
 	audit.Put(ev)
@@ -259,12 +258,11 @@ func (h *Handler) doQuery(
 	var err error
 
 	defer func() {
-		audit.Put(event.New("honey_mysql_query",
-			event.Subject("honey mysql query"),
-			event.User(c.User),
-			event.Addr(c.Conn.RemoteAddr().String()),
-			event.Infof("%s", query),
-			event.ERR(err)))
+		audit.New("honey_mysql_query",
+			audit.Subject("honey mysql query"),
+			audit.User(c.User),
+			audit.Remote(c.Conn.RemoteAddr().String()),
+			audit.Msg("%s", query) )
 	}()
 
 	var handled bool

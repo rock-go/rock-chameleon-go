@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/rock-go/rock/audit"
-	"github.com/rock-go/rock/audit/event"
 	"github.com/rock-go/rock/logger"
 	"github.com/rock-go/rock/lua"
 	"time"
@@ -23,7 +22,7 @@ type sshGo struct {
 
 func newSSH(cfg *config) *sshGo {
 	s := &sshGo{cfg: cfg}
-	s.T = TSSH
+	s.T = sshTypeOf
 	s.S = lua.INIT
 	s.auth = &auth{data: make(map[string]string)}
 	return s
@@ -34,11 +33,11 @@ func (s *sshGo) Name() string {
 }
 
 func (s *sshGo) event(ctx Context, pass string, err error) {
-	audit.Put(event.New("honey_ssh_auth",
-		event.ERR(err),
-		event.User(ctx.User()),
-		event.Addr(ctx.RemoteAddr().String()),
-		event.Infof("pass: %s", pass)))
+	audit.New("honey_ssh_auth" ,
+		audit.Subject("ssh auth fail"),
+		audit.User(ctx.User()),
+		audit.Remote(ctx.RemoteAddr().String()),
+		audit.Msg("pass: %s , err: %v", pass , err))
 }
 
 var (
@@ -81,8 +80,7 @@ func (s *sshGo) Start() error {
 	}()
 
 	s.ctx, s.cancel = context.WithCancel(context.Background())
-	s.S = lua.RUNNING
-	s.U = time.Now()
+	s.Set(lua.RUNNING , time.Now())
 	logger.Errorf("%s %s start succeed", s.Name(), s.Type())
 	return err
 }
