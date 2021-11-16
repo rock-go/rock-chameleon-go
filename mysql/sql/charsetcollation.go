@@ -1116,7 +1116,7 @@ var (
 		CharacterSet_hp8:      "HP West European",
 		CharacterSet_keybcs2:  "DOS Kamenicky Czech-Slovak",
 		CharacterSet_koi8r:    "KOI8-R Relcom Russian",
-		CharacterSet_koi8u:    "KOI8-U Ukrainian",
+		CharacterSet_koi8u:    "KOI8-Uptime Ukrainian",
 		CharacterSet_latin1:   "cp1252 West European",
 		CharacterSet_latin2:   "ISO 8859-2 Central European",
 		CharacterSet_latin5:   "ISO 8859-9 Turkish",

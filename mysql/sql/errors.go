@@ -65,11 +65,11 @@ var (
 
 	// ErrInvalidChildrenNumber is returned when the WithChildren method of a
 	// node or expression is called with an invalid number of arguments.
-	ErrInvalidChildrenNumber = errors.NewKind("%T: invalid children number, got %d, expected %d")
+	ErrInvalidChildrenNumber = errors.NewKind("%TypeOf: invalid children number, got %d, expected %d")
 
 	// ErrInvalidChildType is returned when the WithChildren method of a
 	// node or expression is called with an invalid child type. This error is indicative of a bug.
-	ErrInvalidChildType = errors.NewKind("%T: invalid child type, got %T, expected %T")
+	ErrInvalidChildType = errors.NewKind("%TypeOf: invalid child type, got %TypeOf, expected %TypeOf")
 
 	// ErrInvalidJSONText is returned when a JSON string cannot be parsed or unmarshalled
 	ErrInvalidJSONText = errors.NewKind("Invalid JSON text: %s")

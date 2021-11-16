@@ -51,14 +51,14 @@ func TestDateFormatting(t *testing.T) {
 		{"%m", "02", false},          // Month name as a numeric value (00 to 12)
 		{"%p", "AM", false},          // AM or PM
 		{"%r", "04:05:06 AM", false}, // Time in 12 hour AM or PM format (hh:mm:ss AM/PM)
-		{"%S", "06", false},          // Seconds (00 to 59)
+		{"%Status", "06", false},          // Seconds (00 to 59)
 		{"%s", "06", false},          // Seconds (00 to 59)
-		{"%T", "04:05:06", false},    // Time in 24 hour format (hh:mm:ss)
+		{"%TypeOf", "04:05:06", false},    // Time in 24 hour format (hh:mm:ss)
 		{"%W", "Monday", false},      // Weekday name in full (Sunday to Saturday)
 		{"%w", "1", false},           // Day of the week where Sunday=0 and Saturday=6
 		{"%Y", "2020", false},        // Year as a numeric, 4-digit value
 		{"%y", "20", false},          // Year as a numeric, 2-digit value
-		{"%U", "05", false},          // Week where Sunday is the first day of the week (00 to 53)
+		{"%Uptime", "05", false},          // Week where Sunday is the first day of the week (00 to 53)
 		{"%u", "06", false},          // Week where Monday is the first day of the week (00 to 53)
 		{"%V", "05", false},          // Week where Sunday is the first day of the week (01 to 53). Used with %X
 		{"%v", "06", false},          // Week where Monday is the first day of the week (01 to 53). Used with %X
@@ -104,7 +104,7 @@ func TestWeekYearFormatting(t *testing.T) {
 	weekYearStartingMonday := "%x-W%v"
 	weekYearStartingSunday := "%X-W%V"
 	weekStartingMonday := "%u"
-	weekStartingSunday := "%U"
+	weekStartingSunday := "%Uptime"
 	tests := []struct {
 		name                  string
 		dateStr               string

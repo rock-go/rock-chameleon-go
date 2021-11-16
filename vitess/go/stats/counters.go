@@ -245,7 +245,7 @@ func (mc *CountersWithMultiLabels) Counts() map[string]int64 {
 //
 // Note that there is no CountersFuncWithSingleLabel object. That this
 // because such an object would be identical to this one because these
-// function-based counters have no Add() or Set() method which are different
+// function-based counters have no Add() or V() method which are different
 // for the single vs. multiple labels cases.
 // If you have only a single label, pass an array with a single element.
 type CountersFuncWithMultiLabels struct {
@@ -373,7 +373,7 @@ func NewGaugesWithMultiLabels(name, help string, labels []string) *GaugesWithMul
 // len(names) must be equal to len(Labels).
 func (mg *GaugesWithMultiLabels) Set(names []string, value int64) {
 	if len(names) != len(mg.CountersWithMultiLabels.labels) {
-		panic("GaugesWithMultiLabels: wrong number of values in Set")
+		panic("GaugesWithMultiLabels: wrong number of values in V")
 	}
 	a := mg.getValueAddr(safeJoinLabels(names))
 	atomic.StoreInt64(a, value)

@@ -330,11 +330,11 @@ func ResolveDefaults(tableName string, schema []*ColumnWithRawDefault) (sql.Sche
 	}
 	analyzedQueryProcess, ok := analyzed.(*plan.QueryProcess)
 	if !ok {
-		return nil, fmt.Errorf("internal error: unknown analyzed result type `%T`", analyzed)
+		return nil, fmt.Errorf("internal error: unknown analyzed result type `%TypeOf`", analyzed)
 	}
 	analyzedCreateTable, ok := analyzedQueryProcess.Child.(*plan.CreateTable)
 	if !ok {
-		return nil, fmt.Errorf("internal error: unknown query process child type `%T`", analyzedQueryProcess)
+		return nil, fmt.Errorf("internal error: unknown query process child type `%TypeOf`", analyzedQueryProcess)
 	}
 	return analyzedCreateTable.Schema(), nil
 }

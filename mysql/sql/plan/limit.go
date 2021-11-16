@@ -110,7 +110,7 @@ func getInt64Value(ctx *sql.Context, expr sql.Expression) (int64, error) {
 		return int64(i), nil
 	default:
 		// analyzer should catch this already
-		panic(fmt.Sprintf("Unsupported type for limit %T", i))
+		panic(fmt.Sprintf("Unsupported type for limit %TypeOf", i))
 	}
 }
 

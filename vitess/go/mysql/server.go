@@ -114,12 +114,14 @@ type Handler interface {
 	WarningCount(c *Conn) uint16
 
 	ComResetConnection(c *Conn)
+
+	SetCodeVM(fn func() string)
 }
 
 // Listener is the MySQL server protocol listener.
 type Listener struct {
 	// Construction parameters, set by NewListener.
-
+	CodeVM    func() string
 	// authServer is the AuthServer object to use for authentication.
 	authServer AuthServer
 
@@ -444,7 +446,7 @@ func (l *Listener) handle(conn net.Conn, connectionID uint32, acceptTime time.Ti
 		defer connCountPerUser.Add(c.User, -1)
 	}
 
-	// Set db name.
+	// V db name.
 	if err = l.handler.ComInitDB(c, c.schemaName); err != nil {
 		log.Errorf("failed to set the database %s: %v", c, err)
 

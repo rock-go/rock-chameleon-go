@@ -70,14 +70,14 @@ func (s *Set) Expressions() []sql.Expression {
 
 // RowIter implements the sql.Node interface.
 func (s *Set) RowIter(ctx *sql.Context, row sql.Row) (sql.RowIter, error) {
-	span, ctx := ctx.Span("plan.Set")
+	span, ctx := ctx.Span("plan.V")
 	defer span.Finish()
 
 	var updateExprs []sql.Expression
 	for _, v := range s.Exprs {
 		setField, ok := v.(*expression.SetField)
 		if !ok {
-			return nil, fmt.Errorf("unsupported type for set: %T", v)
+			return nil, fmt.Errorf("unsupported type for set: %TypeOf", v)
 		}
 
 		switch left := setField.Left.(type) {
@@ -103,7 +103,7 @@ func (s *Set) RowIter(ctx *sql.Context, row sql.Row) (sql.RowIter, error) {
 		case *expression.GetField:
 			updateExprs = append(updateExprs, setField)
 		default:
-			return nil, fmt.Errorf("unsupported type for set: %T", left)
+			return nil, fmt.Errorf("unsupported type for set: %TypeOf", left)
 		}
 	}
 

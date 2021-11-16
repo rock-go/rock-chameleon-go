@@ -34,7 +34,7 @@ var ErrInvalidArgumentType = errors.NewKind("function '%s' received invalid argu
 var ErrTimeUnexpectedlyNil = errors.NewKind("time in function '%s' unexpectedly nil")
 
 // ErrUnknownType is thrown when a function encounters and unknown type
-var ErrUnknownType = errors.NewKind("function '%s' encountered unknown type %T")
+var ErrUnknownType = errors.NewKind("function '%s' encountered unknown type %TypeOf")
 
 func getDate(ctx *sql.Context,
 	u expression.UnaryExpression,

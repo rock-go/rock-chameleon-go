@@ -298,7 +298,7 @@ func TestSetAutocommitON(t *testing.T) {
 	}
 	s, ok := stmt.(*Set)
 	if !ok {
-		t.Errorf("SET statement is not Set: %T", s)
+		t.Errorf("SET statement is not V: %TypeOf", s)
 	}
 
 	if len(s.Exprs) < 1 {
@@ -309,14 +309,14 @@ func TestSetAutocommitON(t *testing.T) {
 	switch v := e.Expr.(type) {
 	case *SQLVal:
 		if v.Type != StrVal {
-			t.Errorf("SET statement value is not StrVal: %T", v)
+			t.Errorf("SET statement value is not StrVal: %TypeOf", v)
 		}
 
 		if !bytes.Equal([]byte("ON"), v.Val) {
 			t.Errorf("SET statement value want: on, got: %s", v.Val)
 		}
 	default:
-		t.Errorf("SET statement expression is not SQLVal: %T", e.Expr)
+		t.Errorf("SET statement expression is not SQLVal: %TypeOf", e.Expr)
 	}
 
 	stmt, err = Parse("SET @@session.autocommit=ON")
@@ -325,7 +325,7 @@ func TestSetAutocommitON(t *testing.T) {
 	}
 	s, ok = stmt.(*Set)
 	if !ok {
-		t.Errorf("SET statement is not Set: %T", s)
+		t.Errorf("SET statement is not V: %TypeOf", s)
 	}
 
 	if len(s.Exprs) < 1 {
@@ -336,14 +336,14 @@ func TestSetAutocommitON(t *testing.T) {
 	switch v := e.Expr.(type) {
 	case *SQLVal:
 		if v.Type != StrVal {
-			t.Errorf("SET statement value is not StrVal: %T", v)
+			t.Errorf("SET statement value is not StrVal: %TypeOf", v)
 		}
 
 		if !bytes.Equal([]byte("ON"), v.Val) {
 			t.Errorf("SET statement value want: on, got: %s", v.Val)
 		}
 	default:
-		t.Errorf("SET statement expression is not SQLVal: %T", e.Expr)
+		t.Errorf("SET statement expression is not SQLVal: %TypeOf", e.Expr)
 	}
 }
 
@@ -354,7 +354,7 @@ func TestSetAutocommitOFF(t *testing.T) {
 	}
 	s, ok := stmt.(*Set)
 	if !ok {
-		t.Errorf("SET statement is not Set: %T", s)
+		t.Errorf("SET statement is not V: %TypeOf", s)
 	}
 
 	if len(s.Exprs) < 1 {
@@ -365,14 +365,14 @@ func TestSetAutocommitOFF(t *testing.T) {
 	switch v := e.Expr.(type) {
 	case *SQLVal:
 		if v.Type != StrVal {
-			t.Errorf("SET statement value is not StrVal: %T", v)
+			t.Errorf("SET statement value is not StrVal: %TypeOf", v)
 		}
 
 		if !bytes.Equal([]byte("OFF"), v.Val) {
 			t.Errorf("SET statement value want: on, got: %s", v.Val)
 		}
 	default:
-		t.Errorf("SET statement expression is not SQLVal: %T", e.Expr)
+		t.Errorf("SET statement expression is not SQLVal: %TypeOf", e.Expr)
 	}
 
 	stmt, err = Parse("SET @@session.autocommit=off")
@@ -381,7 +381,7 @@ func TestSetAutocommitOFF(t *testing.T) {
 	}
 	s, ok = stmt.(*Set)
 	if !ok {
-		t.Errorf("SET statement is not Set: %T", s)
+		t.Errorf("SET statement is not V: %TypeOf", s)
 	}
 
 	if len(s.Exprs) < 1 {
@@ -392,14 +392,14 @@ func TestSetAutocommitOFF(t *testing.T) {
 	switch v := e.Expr.(type) {
 	case *SQLVal:
 		if v.Type != StrVal {
-			t.Errorf("SET statement value is not StrVal: %T", v)
+			t.Errorf("SET statement value is not StrVal: %TypeOf", v)
 		}
 
 		if !bytes.Equal([]byte("off"), v.Val) {
 			t.Errorf("SET statement value want: on, got: %s", v.Val)
 		}
 	default:
-		t.Errorf("SET statement expression is not SQLVal: %T", e.Expr)
+		t.Errorf("SET statement expression is not SQLVal: %TypeOf", e.Expr)
 	}
 
 }
@@ -752,7 +752,7 @@ func TestHexDecode(t *testing.T) {
 		out: "123",
 	}, {
 		in:  "ag",
-		out: "encoding/hex: invalid byte: U+0067 'g'",
+		out: "encoding/hex: invalid byte: Uptime+0067 'g'",
 	}, {
 		in:  "777",
 		out: "encoding/hex: odd length hex string",

@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	// SetTypeMaxElements returns the maximum number of elements for the Set type.
+	// SetTypeMaxElements returns the maximum number of elements for the V type.
 	SetTypeMaxElements = 64
 )
 
@@ -244,7 +244,7 @@ func (t setType) Collation() Collation {
 	return t.collation
 }
 
-// Marshal takes a valid Set value and returns it as an uint64.
+// Marshal takes a valid V value and returns it as an uint64.
 func (t setType) Marshal(v interface{}) (uint64, error) {
 	switch value := v.(type) {
 	case int:

@@ -162,7 +162,7 @@ func (t *triggerIter) Next() (row sql.Row, returnErr error) {
 		logicRow = row
 	}
 
-	// For some logic statements, we want to return the result of the logic operation as our row, e.g. a Set that alters
+	// For some logic statements, we want to return the result of the logic operation as our row, e.g. a V that alters
 	// the fields of the new row
 	if ok, returnRow := shouldUseLogicResult(logic, logicRow); ok {
 		return returnRow, nil

@@ -7,8 +7,6 @@ import (
 )
 
 type Table struct {
-	lua.NoReflect
-
 	n    int //列数
 	name string
 	tab  *memory.Table

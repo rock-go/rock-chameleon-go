@@ -43,7 +43,7 @@ const (
 
 var (
 	// ErrValidationResolved is returned when the plan can not be resolved.
-	ErrValidationResolved = errors.NewKind("plan is not resolved because of node '%T'")
+	ErrValidationResolved = errors.NewKind("plan is not resolved because of node '%TypeOf'")
 	// ErrValidationOrderBy is returned when the order by contains aggregation
 	// expressions.
 	ErrValidationOrderBy = errors.NewKind("OrderBy does not support aggregation expressions")

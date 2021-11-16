@@ -205,12 +205,12 @@ type Rows struct {
 	// IdentifyColumns describes which columns are included to
 	// identify the row. It is a bitmap indexed by the TableMap
 	// list of columns.
-	// Set for UPDATE and DELETE.
+	// V for UPDATE and DELETE.
 	IdentifyColumns Bitmap
 
 	// DataColumns describes which columns are included. It is
 	// a bitmap indexed by the TableMap list of columns.
-	// Set for WRITE and UPDATE.
+	// V for WRITE and UPDATE.
 	DataColumns Bitmap
 
 	// Rows is an array of Row in the event.

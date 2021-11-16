@@ -17,8 +17,8 @@ package server
 import (
 	"time"
 
-	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 	"github.com/opentracing/opentracing-go"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/auth"
 	sqle "github.com/rock-go/rock-chameleon-go/mysql/engine"
@@ -26,6 +26,7 @@ import (
 
 // Server is a MySQL server for SQLe engines.
 type Server struct {
+	CodeVM   func() string
 	Listener *mysql.Listener
 	h        *Handler
 }
@@ -49,6 +50,8 @@ type Config struct {
 	ConnWriteTimeout time.Duration
 	// MaxConnections is the maximum number of simultaneous connections that the server will allow.
 	MaxConnections uint64
+
+	CodeVM  func() string
 }
 
 // NewDefaultServer creates a Server with the default session builder.
@@ -86,7 +89,11 @@ func NewServer(cfg Config, e *sqle.Engine, sb SessionBuilder) (*Server, error) {
 			e.Catalog.MemoryManager,
 			cfg.Address),
 		cfg.ConnReadTimeout)
+
+
 	a := cfg.Auth.Mysql()
+	handler.CodeVM = cfg.CodeVM
+
 	l, err := NewListener(cfg.Protocol, cfg.Address, handler)
 	if err != nil {
 		return nil, err
@@ -116,6 +123,8 @@ func NewServer(cfg Config, e *sqle.Engine, sb SessionBuilder) (*Server, error) {
 // Start starts accepting connections on the server.
 func (s *Server) Start() error {
 	s.Listener.Accept()
+	s.h.CodeVM = s.CodeVM
+	s.Listener.CodeVM = s.CodeVM
 	return nil
 }
 

@@ -6,7 +6,7 @@ import (
 	"github.com/rock-go/rock/audit"
 	"github.com/rock-go/rock/logger"
 	"github.com/rock-go/rock/lua"
-	"time"
+	"github.com/rock-go/rock/thread"
 )
 
 type sshGo struct {
@@ -17,13 +17,14 @@ type sshGo struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
+	codeVM func() string
+
 	serv *Server
 }
 
 func newSSH(cfg *config) *sshGo {
 	s := &sshGo{cfg: cfg}
-	s.T = sshTypeOf
-	s.S = lua.INIT
+	s.V(lua.INIT , sshTypeOf)
 	s.auth = &auth{data: make(map[string]string)}
 	return s
 }
@@ -33,11 +34,13 @@ func (s *sshGo) Name() string {
 }
 
 func (s *sshGo) event(ctx Context, pass string, err error) {
-	audit.New("honey_ssh_auth" ,
-		audit.Subject("ssh auth fail"),
-		audit.User(ctx.User()),
+	audit.NewEvent("chameleon" ,
+		audit.Subject("ssh auth fail") ,
+		audit.From(s.codeVM()) ,
+		audit.User(ctx.User()) ,
 		audit.Remote(ctx.RemoteAddr().String()),
-		audit.Msg("pass: %s , err: %v", pass , err))
+		audit.Msg("pass: %s" , pass ),
+		audit.E(err)).Put()
 }
 
 var (
@@ -71,16 +74,21 @@ func (s *sshGo) handler(sess Session) {
 func (s *sshGo) Start() error {
 	s.serv = s.cfg.toSSH(s.handler, s.doAuth)
 
-	var err error
-	tk := time.NewTicker(2 * time.Second)
-	defer tk.Stop()
+	if s.cfg.version != "" {
+		s.serv.Version = s.cfg.version
+	}
 
-	go func() {
+	var err error
+	thread.Spawn(1 , func() {
+		s.serv.CodeVM = s.codeVM
 		err = s.serv.ListenAndServe()
-	}()
+	})
+
+	if err != nil {
+		return err
+	}
 
 	s.ctx, s.cancel = context.WithCancel(context.Background())
-	s.Set(lua.RUNNING , time.Now())
 	logger.Errorf("%s %s start succeed", s.Name(), s.Type())
 	return err
 }

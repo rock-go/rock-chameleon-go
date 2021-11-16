@@ -82,7 +82,7 @@ func (buf *TrackedBuffer) Myprintf(format string, values ...interface{}) {
 			case rune:
 				buf.WriteRune(v)
 			default:
-				panic(fmt.Sprintf("unexpected TrackedBuffer type %T", v))
+				panic(fmt.Sprintf("unexpected TrackedBuffer type %TypeOf", v))
 			}
 		case 's':
 			switch v := values[fieldnum].(type) {
@@ -91,7 +91,7 @@ func (buf *TrackedBuffer) Myprintf(format string, values ...interface{}) {
 			case string:
 				buf.WriteString(v)
 			default:
-				panic(fmt.Sprintf("unexpected TrackedBuffer type %T", v))
+				panic(fmt.Sprintf("unexpected TrackedBuffer type %TypeOf", v))
 			}
 		case 'v':
 			node := values[fieldnum].(SQLNode)

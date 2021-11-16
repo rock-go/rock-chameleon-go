@@ -55,7 +55,7 @@ var (
 
 	ErrInvalidAutoIncCols = errors.NewKind("there can be only one auto_increment column and it must be defined as a key")
 
-	ErrUnknownConstraintDefinition = errors.NewKind("unknown constraint definition: %s, %T")
+	ErrUnknownConstraintDefinition = errors.NewKind("unknown constraint definition: %s, %TypeOf")
 
 	ErrInvalidCheckConstraint = errors.NewKind("invalid constraint definition: %s")
 )
@@ -657,13 +657,13 @@ func ctesToWith(ctx *sql.Context, cteExprs sqlparser.TableExprs, node sql.Node) 
 func cteExprToCte(ctx *sql.Context, expr sqlparser.TableExpr) (*plan.CommonTableExpression, error) {
 	cte, ok := expr.(*sqlparser.CommonTableExpr)
 	if !ok {
-		return nil, ErrUnsupportedFeature.New(fmt.Sprintf("Unsupported type of common table expression %T", expr))
+		return nil, ErrUnsupportedFeature.New(fmt.Sprintf("Unsupported type of common table expression %TypeOf", expr))
 	}
 
 	ate := cte.AliasedTableExpr
 	_, ok = ate.Expr.(*sqlparser.Subquery)
 	if !ok {
-		return nil, ErrUnsupportedFeature.New(fmt.Sprintf("Unsupported type of common table expression %T", ate.Expr))
+		return nil, ErrUnsupportedFeature.New(fmt.Sprintf("Unsupported type of common table expression %TypeOf", ate.Expr))
 	}
 
 	subquery, err := tableExprToTable(ctx, ate)
@@ -2076,14 +2076,14 @@ func StringToColumnDefaultValue(ctx *sql.Context, exprStr string) (*sql.ColumnDe
 	}
 	parserSelect, ok := stmt.(*sqlparser.Select)
 	if !ok {
-		return nil, fmt.Errorf("DefaultStringToExpression expected sqlparser.Select but received %T", stmt)
+		return nil, fmt.Errorf("DefaultStringToExpression expected sqlparser.Select but received %TypeOf", stmt)
 	}
 	if len(parserSelect.SelectExprs) != 1 {
 		return nil, fmt.Errorf("default string does not have only one expression")
 	}
 	aliasedExpr, ok := parserSelect.SelectExprs[0].(*sqlparser.AliasedExpr)
 	if !ok {
-		return nil, fmt.Errorf("DefaultStringToExpression expected *sqlparser.AliasedExpr but received %T", parserSelect.SelectExprs[0])
+		return nil, fmt.Errorf("DefaultStringToExpression expected *sqlparser.AliasedExpr but received %TypeOf", parserSelect.SelectExprs[0])
 	}
 	parsedExpr, err := ExprToExpression(ctx, aliasedExpr.Expr)
 	if err != nil {
@@ -2484,7 +2484,7 @@ func comparisonExprToExpression(ctx *sql.Context, c *sqlparser.ComparisonExpr) (
 		case *plan.Subquery:
 			return plan.NewInSubquery(left, right), nil
 		default:
-			return nil, ErrUnsupportedFeature.New(fmt.Sprintf("IN %T", right))
+			return nil, ErrUnsupportedFeature.New(fmt.Sprintf("IN %TypeOf", right))
 		}
 	case sqlparser.NotInStr:
 		switch right.(type) {
@@ -2493,7 +2493,7 @@ func comparisonExprToExpression(ctx *sql.Context, c *sqlparser.ComparisonExpr) (
 		case *plan.Subquery:
 			return plan.NewNotInSubquery(left, right), nil
 		default:
-			return nil, ErrUnsupportedFeature.New(fmt.Sprintf("NOT IN %T", right))
+			return nil, ErrUnsupportedFeature.New(fmt.Sprintf("NOT IN %TypeOf", right))
 		}
 	case sqlparser.LikeStr:
 		return expression.NewLike(left, right), nil

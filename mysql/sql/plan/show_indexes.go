@@ -78,7 +78,7 @@ func (n *ShowIndexes) Schema() sql.Schema {
 func (n *ShowIndexes) RowIter(ctx *sql.Context, row sql.Row) (sql.RowIter, error) {
 	table, ok := n.Child.(*ResolvedTable)
 	if !ok {
-		panic(fmt.Sprintf("unexpected type %T", n.Child))
+		panic(fmt.Sprintf("unexpected type %TypeOf", n.Child))
 	}
 
 	return &showIndexesIter{

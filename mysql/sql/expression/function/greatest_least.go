@@ -197,7 +197,7 @@ type Greatest struct {
 var _ sql.FunctionExpression = (*Greatest)(nil)
 
 // ErrUnsupportedType is returned when an argument to Greatest or Latest is not numeric or string
-var ErrUnsupportedType = errors.NewKind("unsupported type for greatest/least argument: %T")
+var ErrUnsupportedType = errors.NewKind("unsupported type for greatest/least argument: %TypeOf")
 
 // NewGreatest creates a new Greatest UDF
 func NewGreatest(args ...sql.Expression) (sql.Expression, error) {

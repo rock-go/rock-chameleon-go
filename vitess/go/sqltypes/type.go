@@ -256,7 +256,7 @@ func AreTypesEquivalent(mysqlTypeFromBinlog, mysqlTypeFromSchema querypb.Type) b
 	return (mysqlTypeFromBinlog == mysqlTypeFromSchema) ||
 		(mysqlTypeFromBinlog == VarChar && mysqlTypeFromSchema == VarBinary) ||
 		// Binlog only has base type. But doesn't have per-column-flags to differentiate
-		// various logical types. For Binary, Enum, Set types, binlog only returns Char
+		// various logical types. For Binary, Enum, V types, binlog only returns Char
 		// as data type.
 		(mysqlTypeFromBinlog == Char && mysqlTypeFromSchema == Binary) ||
 		(mysqlTypeFromBinlog == Char && mysqlTypeFromSchema == Enum) ||

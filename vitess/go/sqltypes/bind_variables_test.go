@@ -244,16 +244,16 @@ func TestBuildBindVariable(t *testing.T) {
 		bv, err := BuildBindVariable(tcase.in)
 		if err != nil {
 			if err.Error() != tcase.err {
-				t.Errorf("ToBindVar(%T(%v)) error: %v, want %s", tcase.in, tcase.in, err, tcase.err)
+				t.Errorf("ToBindVar(%TypeOf(%v)) error: %v, want %s", tcase.in, tcase.in, err, tcase.err)
 			}
 			continue
 		}
 		if tcase.err != "" {
-			t.Errorf("ToBindVar(%T(%v)) error: nil, want %s", tcase.in, tcase.in, tcase.err)
+			t.Errorf("ToBindVar(%TypeOf(%v)) error: nil, want %s", tcase.in, tcase.in, tcase.err)
 			continue
 		}
 		if !proto.Equal(bv, tcase.out) {
-			t.Errorf("ToBindVar(%T(%v)): %v, want %s", tcase.in, tcase.in, bv, tcase.out)
+			t.Errorf("ToBindVar(%TypeOf(%v)): %v, want %s", tcase.in, tcase.in, bv, tcase.out)
 		}
 	}
 }

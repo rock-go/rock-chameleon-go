@@ -22,7 +22,7 @@ import (
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 )
 
-var errCannotSetField = errors.NewKind("Expected GetField expression on left but got %T")
+var errCannotSetField = errors.NewKind("Expected GetField expression on left but got %TypeOf")
 
 // SetField updates the value of a field or a system variable
 type SetField struct {

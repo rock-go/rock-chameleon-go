@@ -30,7 +30,7 @@ type Generator interface {
 
 // ErrNotGenerator is returned when the value cannot be converted to a
 // generator.
-var ErrNotGenerator = errors.NewKind("cannot convert value of type %T to a generator")
+var ErrNotGenerator = errors.NewKind("cannot convert value of type %TypeOf to a generator")
 
 // ToGenerator converts a value to a generator if possible.
 func ToGenerator(v interface{}) (Generator, error) {

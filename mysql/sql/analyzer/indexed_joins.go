@@ -252,7 +252,7 @@ func replanJoin(ctx *sql.Context, node plan.JoinNode, a *Analyzer, joinIndexes j
 			// below here.
 			return false
 		default:
-			a.Log("Skipping join replanning because of incompatible node: %T", node)
+			a.Log("Skipping join replanning because of incompatible node: %TypeOf", node)
 			eligible = false
 		}
 		return true

@@ -7,21 +7,24 @@ import (
 	"time"
 )
 
-type Audit struct{}
+type Audit struct{
+	CodeVM 	func() string
+}
 
 func (a *Audit) Authentication(user, addr string, err error) {
-	ev := audit.NewEvent("honey_mysql_auth" ,
+	ev := audit.NewEvent("chameleon" ,
 		audit.Subject("honey mysql auth") ,
+		audit.From(a.CodeVM()),
 		audit.Remote(addr) ,
 		audit.User(user))
 
 	if err == nil {
 		ev.Set(audit.Msg("honey mysql auth success"))
 	} else {
-		ev.Set(audit.Msg("honey mysql auth error %v" , err))
+		ev.Set(audit.Msg("honey mysql auth error"), audit.E(err))
 	}
 
-	audit.Put(ev)
+	ev.Put()
 }
 
 func (a *Audit) Authorization(ctx *sql.Context, p auth.Permission, err error) {
@@ -29,7 +32,7 @@ func (a *Audit) Authorization(ctx *sql.Context, p auth.Permission, err error) {
 
 }
 func (a *Audit) Query(ctx *sql.Context, d time.Duration, err error) {
-	//"user":          ctx.Client().User,
+	//  "user":          ctx.Client().User,
 	//	"query":         ctx.Query(),
 	//	"address":       ctx.Client().Address,
 	//	"connection_id": ctx.Session.ID(),

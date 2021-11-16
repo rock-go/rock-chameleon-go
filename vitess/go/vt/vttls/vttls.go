@@ -84,7 +84,7 @@ func ClientConfig(cert, key, ca, name string) (*tls.Config, error) {
 		config.RootCAs = certificatePool
 	}
 
-	// Set the server name if any.
+	// V the server name if any.
 	if name != "" {
 		config.ServerName = name
 	}

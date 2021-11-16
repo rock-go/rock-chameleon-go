@@ -3,28 +3,27 @@ package proxy
 import (
 	"context"
 	"github.com/rock-go/rock/audit"
-	"github.com/rock-go/rock/logger"
+	"github.com/rock-go/rock/auxlib"
 	"github.com/rock-go/rock/lua"
+	"github.com/rock-go/rock/thread"
 	"net"
 	"reflect"
-	"time"
 )
 
-var TProxy = reflect.TypeOf((*proxyGo)(nil)).String()
+var proxyTypeOf = reflect.TypeOf((*proxyGo)(nil)).String()
 
 type proxyGo struct {
 	lua.Super
-	cfg *config
-	ln  net.Listener
 
-	ctx    context.Context
-	cancel context.CancelFunc
+	cfg *config
+	cur config
+
+	ln  *auxlib.Listener
 }
 
 func newProxyGo(cfg *config) *proxyGo {
 	p := &proxyGo{cfg: cfg}
-	p.T = TProxy
-	p.S = lua.INIT
+	p.V(lua.INIT , proxyTypeOf)
 	return p
 }
 
@@ -32,74 +31,104 @@ func (p *proxyGo) Name() string {
 	return p.cfg.Name
 }
 
-func (p *proxyGo) Start() error {
-	ln, err := net.Listen(p.cfg.Protocol, p.cfg.Bind)
+func (p *proxyGo) Listen() error {
+
+	if p.ln == nil {
+		goto conn
+	}
+
+	if  p.cfg.Bind == p.cur.Bind &&
+		p.cfg.Protocol == p.cur.Protocol {
+
+		p.cur = *p.cfg
+		p.ln.CloseActiveConn()
+		return nil
+	}
+
+conn:
+	ln , err := auxlib.Listen(p.cfg.Protocol, p.cfg.Bind)
 	if err != nil {
 		return err
 	}
 	p.ln = ln
-	p.ctx, p.cancel = context.WithCancel(context.Background())
-	go p.accept()
-	p.S = lua.RUNNING
-	p.U = time.Now()
+	p.cur = *p.cfg
 
 	return nil
 }
 
-func (p *proxyGo) Close() error {
-	p.cancel()
-	return p.ln.Close()
-}
+func (p *proxyGo) Start() error {
 
-func (p *proxyGo) handle(src net.Conn) {
+	if e := p.Listen(); e != nil {
+		return e
+	}
+
 	var err error
-	var dst net.Conn
-	src_addr := src.RemoteAddr().String()
-
-	ev := audit.NewEvent(p.Type(),
-		audit.Subject("%s命中%s蜜罐" , src_addr , p.Name() ),
-		audit.Remote(src_addr))
-
-		//链接失败告警
-	dst, err = net.Dial(p.cfg.Protocol, p.cfg.Remote)
-	if err != nil {
-		ev.Set(audit.Msg("服务端口:%s 后端地址:%s 链接失败", p.cfg.Bind, p.cfg.Remote))
-		audit.Put(ev)
-		return
-	}
-	//关闭
-	ev.Set(audit.Msg("服务端口:%s 后端地址:%s 会话端口:%s 链接成功",
-		p.cfg.Bind, p.cfg.Remote, dst.RemoteAddr().String()))
-	audit.Put(ev)
-
-	defer dst.Close()
-	//结束告警
-	defer func() {
-		audit.New(p.Type(), audit.Remote(src_addr), audit.Subject("%s结束%s蜜罐", src_addr, p.Name()),
-			audit.Msg("服务地址:%s 后端:%s 会话端口:%s 结束", p.cfg.Bind, p.cfg.Remote, dst.LocalAddr().String()))
-	}()
-
-	flow := newFlowGo(src, dst)
-	err = flow.start(p.ctx)
+	thread.Spawn(3000 , func(){ err = p.ln.OnAccept(p.accept)})
+	return err
 }
 
-func (p *proxyGo) accept() {
-	for {
-		select {
+func (p *proxyGo) Reload() error {
+	return p.Listen()
+}
 
-		//控制退出
-		case <-p.ctx.Done():
-			return
+func (p *proxyGo) Close() error {
+	e := p.ln.Close()
+	return e
+}
 
-		default:
-			conn, err := p.ln.Accept()
-			if err != nil {
-				logger.Errorf("%s proxy accept %v", p.Name(), err)
-				continue
-			}
-			go p.handle(conn)
-		}
+func (p *proxyGo) accept(ctx context.Context , conn net.Conn , stop context.CancelFunc) error {
+	ev := audit.NewEvent("chameleon",
+		audit.Subject("proxy honey conn hit"),
+		audit.From(p.cur.code),
+		audit.Remote(conn.RemoteAddr()))
 
+	dst , err := net.Dial(p.cur.Protocol , p.cur.Remote)
+	if err != nil {
+		ev.Msg("%s 服务端口:%s 后端地址:%s 链接失败",p.Name(), p.cfg.Bind, p.cfg.Remote).E(err).Log().Put()
+	} else {
+		ev.Msg("%s 服务端口:%s 后端地址:%s 链接成功",p.Name(), p.cfg.Bind, p.cfg.Remote).Log().Put()
 	}
 
+	cancel := func() {
+		stop()
+		dst.Close()
+	}
+
+	thread.Spawn(100 , func() {
+		defer cancel()
+		var toTn int64
+
+		ev = audit.NewEvent("chameleon" , audit.From(p.cur.code) , audit.Remote(conn.RemoteAddr()))
+
+		toTn , err = auxlib.Copy(ctx, dst , conn)
+		ev.Msg("%s ")
+		if err != nil {
+			ev.Subject("proxy honey conn close")
+			ev.Msg("程序名称: %s\n  代理关闭 \n发送:%d 原因:%v" , p.Name() ,toTn , err )
+			ev.E(err).Log()
+		} else {
+			ev.Subject("proxy honey conn over")
+			ev.Msg("程序名称: %s 发送到远程 发送:%d 原因:%v" , p.Name() ,toTn , err)
+			ev.Log().Put()
+		}
+	})
+
+	thread.Spawn(100 , func() {
+		defer cancel()
+		var rev int64
+
+		ev = audit.NewEvent("chameleon" , audit.From(p.cur.code) , audit.Remote(conn.RemoteAddr()))
+		rev , err = auxlib.Copy(ctx, conn , dst)
+		if err != nil {
+			ev.Subject("proxy honey conn close")
+			ev.Msg("程序名称: %s 接收远程失败:%d 原因:%v" , p.Name() , rev , err )
+			ev.E(err).Log().Put()
+		} else {
+			ev.Subject("proxy honey conn over")
+			ev.Msg("程序名称: %s 接收远程结束 数量:%d 原因:%v" , p.Name() , rev , err )
+			ev.Log().Put()
+		}
+	})
+
+	return err
 }

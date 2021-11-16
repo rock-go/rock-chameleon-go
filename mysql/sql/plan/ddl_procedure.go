@@ -95,7 +95,7 @@ func (c *CreateProcedure) WithChildren(children ...sql.Node) (sql.Node, error) {
 	}
 	procedure, ok := children[0].(*Procedure)
 	if !ok {
-		return nil, fmt.Errorf("expected `*Procedure` but got `%T`", children[0])
+		return nil, fmt.Errorf("expected `*Procedure` but got `%TypeOf`", children[0])
 	}
 
 	nc := *c

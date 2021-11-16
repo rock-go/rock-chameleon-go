@@ -61,5 +61,5 @@ func getUpdateAccumulatorType(n sql.Node) (plan.RowUpdateType, error) {
 		return plan.UpdateTypeUpdate, nil
 	}
 
-	return -1, fmt.Errorf("unexpected node type: %T", n)
+	return -1, fmt.Errorf("unexpected node type: %TypeOf", n)
 }

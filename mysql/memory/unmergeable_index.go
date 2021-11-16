@@ -154,7 +154,7 @@ func getType(val interface{}) (interface{}, sql.Type) {
 	case time.Time:
 		return val, sql.Datetime
 	default:
-		panic(fmt.Sprintf("Unsupported type for %v of type %T", val, val))
+		panic(fmt.Sprintf("Unsupported type for %v of type %TypeOf", val, val))
 	}
 }
 

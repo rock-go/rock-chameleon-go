@@ -64,6 +64,7 @@ type Handler struct {
 	e           *sqle.Engine
 	sm          *SessionManager
 	readTimeout time.Duration
+	CodeVM      func() string
 }
 
 // NewHandler creates a new Handler given a SQLe engine.
@@ -75,14 +76,18 @@ func NewHandler(e *sqle.Engine, sm *SessionManager, rt time.Duration) *Handler {
 	}
 }
 
+func (h *Handler) SetCodeVM(fn func() string) {
+	h.CodeVM = fn
+}
+
 // NewConnection reports that a new connection has been established.
 func (h *Handler) NewConnection(c *mysql.Conn) {
-	ev := audit.NewEvent("honey_mysql_conn",
+	audit.NewEvent("chameleon",
+		audit.From(h.CodeVM()),
 		audit.Subject("honey mysql conn"),
 		audit.Remote(c.Conn.RemoteAddr().String()),
-		audit.Msg("client id: %s" , c.ConnectionID))
-
-	audit.Put(ev)
+		audit.Msg("client id: %d" , c.ConnectionID),
+		).Put()
 }
 
 func (h *Handler) ComInitDB(c *mysql.Conn, schemaName string) error {
@@ -113,24 +118,21 @@ func (h *Handler) ComResetConnection(c *mysql.Conn) {
 func (h *Handler) ConnectionClosed(c *mysql.Conn) {
 	ctx, _ := h.sm.NewContextWithQuery(c, "")
 	h.sm.CloseConn(c)
-
-	ev := audit.NewEvent("honey_mysql_close",
+	ev := audit.NewEvent("chameleon",
 		audit.Subject("honey mysql close"),
-		audit.User(c.User),
+		audit.From(h.CodeVM()),
 		audit.Remote(c.Conn.RemoteAddr().String()))
 
 	// If connection was closed, kill its associated queries.
 	h.e.Catalog.ProcessList.Kill(c.ConnectionID)
 	if err := h.e.Catalog.UnlockTables(ctx, c.ConnectionID); err != nil {
-		logger.Errorf("unable to unlock tables on session close: %s", err)
 		ev.Set(audit.Msg("unable to unlock tables on session close"))
-		goto done
+		ev.Set(audit.E(err)).Put()
+		return
 	}
 
-	ev.Set(audit.Msg("client id: %d close", c.ConnectionID))
+	ev.Set(audit.Msg("client id: %d close succeed", c.ConnectionID)).Put()
 
-done:
-	audit.Put(ev)
 }
 
 // ComQuery executes a SQL query on the SQLe engine.
@@ -258,11 +260,17 @@ func (h *Handler) doQuery(
 	var err error
 
 	defer func() {
-		audit.New("honey_mysql_query",
+		ev := audit.NewEvent("chameleon",
 			audit.Subject("honey mysql query"),
+			audit.From(h.CodeVM()),
 			audit.User(c.User),
-			audit.Remote(c.Conn.RemoteAddr().String()),
+			audit.Remote(c.Conn.RemoteAddr()),
 			audit.Msg("%s", query) )
+		if err != nil {
+			ev.Set(audit.E(err)).Put()
+		} else {
+			ev.Put()
+		}
 	}()
 
 	var handled bool
@@ -349,7 +357,7 @@ func (h *Handler) doQuery(
 	// Default waitTime is one minute if there is no timeout configured, in which case
 	// it will loop to iterate again unless the socket died by the OS timeout or other problems.
 	// If there is a timeout, it will be enforced to ensure that Vitess has a chance to
-	// call Handler.CloseConnection()
+	// call OnAccept.CloseConnection()
 	waitTime := 1 * time.Minute
 
 	if h.readTimeout > 0 {

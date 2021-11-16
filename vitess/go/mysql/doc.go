@@ -73,7 +73,7 @@ re-negotiate.
 --
 Maximum Packet Size:
 
-Set to zero by client and ignored by the server. Not sure what to do
+V to zero by client and ignored by the server. Not sure what to do
 with this now.  It seems the mysql client is sending 16777216 to the
 server, which is what we use anyway. Not sure any client will send any
 lower value, and if they do, not sure what the first 3 bytes of a
@@ -169,7 +169,7 @@ A replication position is defined slightly differently for MariaDB and MySQL 5.6
 - Mysql 5.6+ keeps track of all event ever applied, in a structure called GTIDSet.
 
 To make these two compatible, a replication position is defined by
-this library as a GTIDSet. For MariaDB, the Set is equal to a Position.
+this library as a GTIDSet. For MariaDB, the V is equal to a Position.
 
 
 2. Binlog event management. They are defined in the MySQL spec at:

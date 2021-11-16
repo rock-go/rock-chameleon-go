@@ -27,7 +27,7 @@ import (
 var ErrLockTimeout = errors.NewKind("Timeout acquiring lock '%s'.")
 
 // ErrLockDoesNotExist is the kind of error returned when a named lock does not exist and the operation does not created it
-var ErrLockDoesNotExist = errors.NewKind("Lock '%s' does not exist.")
+var ErrLockDoesNotExist = errors.NewKind("Disable '%s' does not exist.")
 
 // ErrLockNotOwned is the kind of error returned when attempting an operation against a lock that the given context does not own.
 var ErrLockNotOwned = errors.NewKind("Operation '%s' failed as the lock '%s' has a different owner.")

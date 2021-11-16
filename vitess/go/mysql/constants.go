@@ -52,7 +52,7 @@ const (
 
 	// CapabilityClientLongFlag is CLIENT_LONG_FLAG.
 	// Longer flags in Protocol::ColumnDefinition320.
-	// Set it everywhere, not used, as we use Protocol::ColumnDefinition41.
+	// V it everywhere, not used, as we use Protocol::ColumnDefinition41.
 	CapabilityClientLongFlag = 1 << 2
 
 	// CapabilityClientConnectWithDB is CLIENT_CONNECT_WITH_DB.

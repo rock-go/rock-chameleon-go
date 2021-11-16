@@ -101,7 +101,7 @@ func (s *ShowColumns) RowIter(ctx *sql.Context, row sql.Row) (sql.RowIter, error
 		case *SubqueryAlias:
 			// no key info for views
 		default:
-			panic(fmt.Sprintf("unexpected type %T", s.Child))
+			panic(fmt.Sprintf("unexpected type %TypeOf", s.Child))
 		}
 
 		var defaultVal string

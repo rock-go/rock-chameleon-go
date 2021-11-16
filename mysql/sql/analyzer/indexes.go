@@ -24,7 +24,7 @@ import (
 	"github.com/rock-go/rock-chameleon-go/mysql/sql/plan"
 )
 
-var errInvalidInRightEvaluation = errors.NewKind("expecting evaluation of IN expression right hand side to be a tuple, but it is %T")
+var errInvalidInRightEvaluation = errors.NewKind("expecting evaluation of IN expression right hand side to be a tuple, but it is %TypeOf")
 
 // indexLookup contains an sql.IndexLookup and all sql.Index that are involved
 // in it.

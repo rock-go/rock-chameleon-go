@@ -5368,7 +5368,7 @@ mustEscape:
 	buf.WriteByte('`')
 }
 
-// LockType is an enum for Lock Types
+// LockType is an enum for Disable Types
 type LockType string
 
 const (

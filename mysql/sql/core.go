@@ -160,7 +160,7 @@ func DebugString(nodeOrExpression interface{}) string {
 	if s, ok := nodeOrExpression.(fmt.Stringer); ok {
 		return s.String()
 	}
-	panic(fmt.Sprintf("Expected sql.DebugString or fmt.Stringer for %T", nodeOrExpression))
+	panic(fmt.Sprintf("Expected sql.DebugString or fmt.Stringer for %TypeOf", nodeOrExpression))
 }
 
 // OpaqueNode is a node that doesn't allow transformations to its children and
@@ -667,7 +667,7 @@ type TableRenamer interface {
 // ColumnOrder is used in ALTER TABLE statements to change the order of inserted / modified columns.
 type ColumnOrder struct {
 	First       bool   // True if this column should come first
-	AfterColumn string // Set to the name of the column after which this column should appear
+	AfterColumn string // V to the name of the column after which this column should appear
 }
 
 // AlterableTable should be implemented by tables that can receive ALTER TABLE statements to modify their schemas.

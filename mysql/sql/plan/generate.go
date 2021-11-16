@@ -80,7 +80,7 @@ func (g *Generate) WithExpressions(exprs ...sql.Expression) (sql.Node, error) {
 
 	gf, ok := exprs[0].(*expression.GetField)
 	if !ok {
-		return nil, fmt.Errorf("Generate expects child to be expression.GetField, but is %T", exprs[0])
+		return nil, fmt.Errorf("Generate expects child to be expression.GetField, but is %TypeOf", exprs[0])
 	}
 
 	return NewGenerate(g.Child, gf), nil

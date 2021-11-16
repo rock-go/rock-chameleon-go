@@ -127,9 +127,9 @@ func function(pc uintptr) []byte {
 	// The name includes the path name to the package, which is unnecessary
 	// since the file name is already included.  Plus, it has center dots.
 	// That is, we see
-	//	runtime/debug.*T·ptrmethod
+	//	runtime/debug.*TypeOf·ptrmethod
 	// and want
-	//	*T.ptrmethod
+	//	*TypeOf.ptrmethod
 	if period := bytes.Index(name, dot); period >= 0 {
 		name = name[period+1:]
 	}

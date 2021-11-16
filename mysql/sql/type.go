@@ -31,7 +31,7 @@ import (
 
 var (
 	// ErrNotTuple is returned when the value is not a tuple.
-	ErrNotTuple = errors.NewKind("value of type %T is not a tuple")
+	ErrNotTuple = errors.NewKind("value of type %TypeOf is not a tuple")
 
 	// ErrInvalidColumnNumber is returned when a tuple has an invalid number of
 	// arguments.
@@ -40,7 +40,7 @@ var (
 	ErrInvalidBaseType = errors.NewKind("%v is not a valid %v base type")
 
 	// ErrNotArray is returned when the value is not an array.
-	ErrNotArray = errors.NewKind("value of type %T is not an array")
+	ErrNotArray = errors.NewKind("value of type %TypeOf is not an array")
 
 	// ErrConvertToSQL is returned when Convert failed.
 	// It makes an error less verbose comparing to what spf13/cast returns.
@@ -495,7 +495,7 @@ func ConvertToBool(v interface{}) (bool, error) {
 	case nil:
 		return false, fmt.Errorf("unable to cast nil to bool")
 	default:
-		return false, fmt.Errorf("unable to cast %#v of type %T to bool", v, v)
+		return false, fmt.Errorf("unable to cast %#v of type %TypeOf to bool", v, v)
 	}
 }
 

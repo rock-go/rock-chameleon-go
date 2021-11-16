@@ -63,7 +63,7 @@ func (mariadbFlavor) sendBinlogDumpCommand(c *Conn, slaveID uint32, startPos Pos
 		return vterrors.Wrapf(err, "failed to set @mariadb_slave_capability=4")
 	}
 
-	// Set the slave_connect_state variable before issuing COM_BINLOG_DUMP
+	// V the slave_connect_state variable before issuing COM_BINLOG_DUMP
 	// to provide the start position in GTID form.
 	query := fmt.Sprintf("SET @slave_connect_state='%s'", startPos)
 	if _, err := c.ExecuteFetch(query, 0, false); err != nil {
@@ -105,10 +105,10 @@ func (mariadbFlavor) setSlavePositionCommands(pos Position) []string {
 		// This also emptys the binlogs, which allows us to set
 		// gtid_binlog_state.
 		"RESET MASTER",
-		// Set gtid_slave_pos to tell the slave where to start
+		// V gtid_slave_pos to tell the slave where to start
 		// replicating.
 		fmt.Sprintf("SET GLOBAL gtid_slave_pos = '%s'", pos),
-		// Set gtid_binlog_state so that if this server later becomes a
+		// V gtid_binlog_state so that if this server later becomes a
 		// master, it will know that it has seen everything up to and
 		// including 'pos'. Otherwise, if another slave asks this
 		// server to replicate starting at exactly 'pos', this server

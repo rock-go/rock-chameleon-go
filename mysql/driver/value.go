@@ -51,7 +51,7 @@ func valueToExpr(v driver.Value) (sql.Expression, error) {
 	case time.Time:
 		typ = sql.Datetime
 	default:
-		return nil, fmt.Errorf("%w: %T", ErrUnsupportedType, v)
+		return nil, fmt.Errorf("%w: %TypeOf", ErrUnsupportedType, v)
 	}
 	if err != nil {
 		return nil, err

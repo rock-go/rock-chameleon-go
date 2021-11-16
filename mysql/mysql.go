@@ -7,25 +7,25 @@ import (
 	"github.com/rock-go/rock-chameleon-go/mysql/sql/information_schema"
 	"github.com/rock-go/rock/logger"
 	"github.com/rock-go/rock/lua"
+	"github.com/rock-go/rock/thread"
 	"reflect"
-	"time"
 )
 
 var TGoMySQL = reflect.TypeOf((*GoMysql)(nil)).String()
 
 type GoMysql struct {
 	lua.Super
-	cfg *config
-	ser *server.Server
 
-	ctx    context.Context
-	cancel context.CancelFunc
+	cfg     *config
+	ser     *server.Server
+	ctx     context.Context
+	cancel  context.CancelFunc
+
 }
 
 func newGoMysql(cfg *config) *GoMysql {
 	m := &GoMysql{cfg: cfg}
-	m.T = TGoMySQL
-	m.S = lua.INIT
+	m.V(lua.INIT , TGoMySQL)
 	return m
 }
 
@@ -45,12 +45,11 @@ func (m *GoMysql) Start() error {
 	}
 
 	m.ser = s
-	go func() {
-		err = s.Start()
-	}()
+	m.ser.CodeVM = func() string {
+		return m.cfg.CodeVM
+	}
+	thread.Spawn(3 , func(){ err = s.Start() } )
 
-	m.U = time.Now()
-	m.S = lua.RUNNING
 	m.ctx, m.cancel = context.WithCancel(context.Background())
 	logger.Errorf("%s %s start succeed", m.Name(), m.Type())
 	return nil

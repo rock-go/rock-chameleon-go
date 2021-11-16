@@ -154,7 +154,7 @@ func reorderSort(sort *plan.Sort, missingCols []string) (sql.Node, error) {
 	}
 }
 
-var errSortPushdown = errors.NewKind("unable to push plan.Sort node below %T")
+var errSortPushdown = errors.NewKind("unable to push plan.Sort node below %TypeOf")
 
 func pushSortDown(sort *plan.Sort) (sql.Node, error) {
 	switch child := sort.Child.(type) {

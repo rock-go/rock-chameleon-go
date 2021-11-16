@@ -86,7 +86,7 @@ func loadStoredProcedures(ctx *sql.Context, a *Analyzer, n sql.Node, scope *Scop
 				}
 				analyzedProc, ok := analyzedNode.(*plan.Procedure)
 				if !ok {
-					return nil, fmt.Errorf("analyzed node %T and expected *plan.Procedure", analyzedNode)
+					return nil, fmt.Errorf("analyzed node %TypeOf and expected *plan.Procedure", analyzedNode)
 				}
 
 				a.ProcedureCache.Register(database.Name(), analyzedProc)
@@ -252,7 +252,7 @@ func resolveProcedureParams(paramNames map[string]struct{}, proc sql.Node) (sql.
 	}
 	newProc, ok := newProcNode.(*plan.Procedure)
 	if !ok {
-		return nil, fmt.Errorf("expected `*plan.Procedure` but got `%T`", newProcNode)
+		return nil, fmt.Errorf("expected `*plan.Procedure` but got `%TypeOf`", newProcNode)
 	}
 	return newProc, nil
 }
@@ -383,7 +383,7 @@ func applyProceduresCall(ctx *sql.Context, a *Analyzer, call *plan.Call, scope *
 	var ok bool
 	procedure, ok = transformedProcedure.(*plan.Procedure)
 	if !ok {
-		return nil, fmt.Errorf("expected `*plan.Procedure` but got `%T`", transformedProcedure)
+		return nil, fmt.Errorf("expected `*plan.Procedure` but got `%TypeOf`", transformedProcedure)
 	}
 
 	if len(procedure.Params) != len(call.Params) {

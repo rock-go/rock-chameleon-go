@@ -3180,7 +3180,7 @@ func TestParseErrors(t *testing.T) {
 			ctx := sql.NewEmptyContext()
 			_, err := Parse(ctx, query)
 			require.Error(err)
-			require.True(expectedError.Is(err), "Expected %T but got %T", expectedError, err)
+			require.True(expectedError.Is(err), "Expected %TypeOf but got %TypeOf", expectedError, err)
 		})
 	}
 }

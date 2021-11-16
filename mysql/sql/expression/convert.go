@@ -55,7 +55,7 @@ const (
 	ConvertToUnsigned = "unsigned"
 )
 
-// Convert represent a CAST(x AS T) or CONVERT(x, T) operation that casts x expression to type T.
+// Convert represent a CAST(x AS TypeOf) or CONVERT(x, TypeOf) operation that casts x expression to type TypeOf.
 type Convert struct {
 	UnaryExpression
 	// Type to cast

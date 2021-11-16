@@ -29,7 +29,7 @@ func resolveCreateLike(ctx *sql.Context, a *Analyzer, n sql.Node, scope *Scope) 
 	}
 	resolvedLikeTable, ok := planCreate.Like().(*plan.ResolvedTable)
 	if !ok {
-		return nil, fmt.Errorf("attempted to resolve CREATE LIKE, expected `ResolvedTable` but received `%T`", planCreate.Like())
+		return nil, fmt.Errorf("attempted to resolve CREATE LIKE, expected `ResolvedTable` but received `%TypeOf`", planCreate.Like())
 	}
 	likeTable := resolvedLikeTable.Table
 	var idxDefs []*plan.IndexDefinition

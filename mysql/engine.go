@@ -6,7 +6,6 @@ import (
 )
 
 type EngineDB struct {
-	lua.NoReflect
 	obj  *memory.Database
 	meta lua.UserKV
 }

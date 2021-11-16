@@ -215,7 +215,7 @@ func BuildBindVariable(v interface{}) (*querypb.BindVariable, error) {
 		}
 		return bv, nil
 	}
-	return nil, fmt.Errorf("type %T not supported as bind var: %v", v, v)
+	return nil, fmt.Errorf("type %TypeOf not supported as bind var: %v", v, v)
 }
 
 // ValidateBindVariables validates a map[string]*querypb.BindVariable.

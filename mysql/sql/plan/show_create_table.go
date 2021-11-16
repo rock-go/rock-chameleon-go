@@ -78,7 +78,7 @@ func (n *ShowCreateTable) Schema() sql.Schema {
 			&sql.Column{Name: "Create Table", Type: sql.LongText, Nullable: false},
 		}
 	default:
-		panic(fmt.Sprintf("unexpected type %T", n.Child))
+		panic(fmt.Sprintf("unexpected type %TypeOf", n.Child))
 	}
 }
 
@@ -144,7 +144,7 @@ func (i *showCreateTablesIter) Next() (sql.Row, error) {
 		tableName = table.Name()
 		composedCreateTableStatement = produceCreateViewStatement(table)
 	default:
-		panic(fmt.Sprintf("unexpected type %T", i.table))
+		panic(fmt.Sprintf("unexpected type %TypeOf", i.table))
 	}
 
 	return sql.NewRow(

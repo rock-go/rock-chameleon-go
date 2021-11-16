@@ -24,7 +24,7 @@ import (
 )
 
 var ErrUpdateNotSupported = errors.NewKind("table doesn't support UPDATE")
-var ErrUpdateUnexpectedSetResult = errors.NewKind("attempted to set field but expression returned %T")
+var ErrUpdateUnexpectedSetResult = errors.NewKind("attempted to set field but expression returned %TypeOf")
 
 // Update is a node for updating rows on tables.
 type Update struct {

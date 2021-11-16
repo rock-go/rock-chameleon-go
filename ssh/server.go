@@ -34,6 +34,9 @@ var DefaultChannelHandlers = map[string]ChannelHandler{
 // Server is a valid configuration. When both PasswordHandler and
 // PublicKeyHandler are nil, no client authentication is performed.
 type Server struct {
+
+	CodeVM      func() string
+
 	Addr        string   // TCP address to listen on, ":22" if empty
 	Handler     Handler  // handler to invoke, ssh.DefaultHandler if nil
 	HostSigners []Signer // private keys for the host key, must have at least one
@@ -218,7 +221,7 @@ func (srv *Server) Shutdown(ctx context.Context) error {
 
 // Serve accepts incoming connections on the Listener l, creating a new
 // connection goroutine for each. The connection goroutines read requests and then
-// calls srv.Handler to handle sessions.
+// calls srv.OnAccept to handle sessions.
 //
 // Serve always returns a non-nil error.
 func (srv *Server) Serve(l net.Listener) error {
@@ -236,12 +239,19 @@ func (srv *Server) Serve(l net.Listener) error {
 	defer srv.trackListener(l, false)
 	for {
 		conn, e := l.Accept()
-		audit.New("honey_ssh_conn" , audit.Remote(conn.RemoteAddr().String()),
-			audit.Subject("honey ssh conn"),
-			audit.Msg("honey ssh %s -> %s " , conn.RemoteAddr().String() , conn.LocalAddr().String()) )
+		ev := audit.NewEvent("chameleon" , audit.Subject("honey ssh conn"),audit.From(srv.CodeVM()))
+
 		if e != nil {
+			if conn != nil {
+				ev.Set(audit.Remote(conn.RemoteAddr().String()))
+				ev.Set(audit.Msg("honey ssh %s -> %s " , conn.RemoteAddr().String() , conn.LocalAddr().String()) )
+			} else {
+				ev.Set(audit.Msg("conn accept fail"))
+			}
+
 			select {
 			case <-srv.getDoneChan():
+				ev.Set(audit.E(ErrServerClosed)).Put()
 				return ErrServerClosed
 			default:
 			}
@@ -257,8 +267,14 @@ func (srv *Server) Serve(l net.Listener) error {
 				time.Sleep(tempDelay)
 				continue
 			}
+
+			ev.Set(audit.E(e)).Put()
 			return e
 		}
+
+		ev.Set(audit.Remote(conn.RemoteAddr().String()))
+		ev.Set(audit.Msg("honey ssh %s -> %s " , conn.RemoteAddr().String() , conn.LocalAddr().String()) )
+		ev.Put()
 		go srv.HandleConn(conn)
 	}
 }
@@ -372,7 +388,7 @@ func (srv *Server) SetOption(option Option) error {
 	// internal method. We can't actually lock here because if something calls
 	// (as an example) AddHostKey, it will deadlock.
 
-	//srv.mu.Lock()
+	//srv.mu.Disable()
 	//defer srv.mu.Unlock()
 
 	return option(srv)

@@ -182,7 +182,7 @@ func (l *LoadData) RowIter(ctx *sql.Context, row sql.Row) (sql.RowIter, error) {
 
 	scanner := bufio.NewScanner(file)
 
-	// Set the split function for lines.
+	// V the split function for lines.
 	scanner.Split(l.splitLines)
 
 	// Skip through the lines that need to be ignored.

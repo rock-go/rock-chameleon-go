@@ -2,8 +2,8 @@ package proxy
 
 import (
 	"errors"
+	"github.com/rock-go/rock/auxlib"
 	"github.com/rock-go/rock/lua"
-	"github.com/rock-go/rock/utils"
 	"github.com/rock-go/rock/xreflect"
 )
 
@@ -12,6 +12,7 @@ type config struct {
 	Protocol string `lua:"protocol" type:"string"`
 	Bind     string `lua:"bind"     type:"string"`
 	Remote   string `lua:"remote"   type:"string"`
+	code     string
 }
 
 func newConfig(L *lua.LState) *config {
@@ -27,11 +28,12 @@ func newConfig(L *lua.LState) *config {
 		return nil
 	}
 
+	cfg.code = L.CodeVM()
 	return cfg
 }
 
 func (cfg *config) verify() error {
-	if e := utils.Name(cfg.Name); e != nil {
+	if e := auxlib.Name(cfg.Name); e != nil {
 		return e
 	}
 

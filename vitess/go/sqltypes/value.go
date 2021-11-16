@@ -172,7 +172,7 @@ func InterfaceToValue(goval interface{}) (Value, error) {
 	case string:
 		return NewVarChar(goval), nil
 	default:
-		return NULL, fmt.Errorf("unexpected type %T: %v", goval, goval)
+		return NULL, fmt.Errorf("unexpected type %TypeOf: %v", goval, goval)
 	}
 }
 

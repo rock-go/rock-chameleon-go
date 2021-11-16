@@ -124,7 +124,7 @@ func (s *Scope) Schema() sql.Schema {
 				}
 			default:
 				// TODO: log this
-				// panic(fmt.Sprintf("Unsupported scope node %T", n))
+				// panic(fmt.Sprintf("Unsupported scope node %TypeOf", n))
 			}
 		}
 	}

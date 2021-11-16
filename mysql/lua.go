@@ -14,7 +14,6 @@ func newLuaMySQL(L *lua.LState) int {
 	} else {
 		proc.Value.(*GoMysql).cfg = cfg
 	}
-
 	L.Push(proc)
 	return 1
 }
@@ -22,7 +21,11 @@ func newLuaMySQL(L *lua.LState) int {
 func newLuaAuth(L *lua.LState) int {
 	name := L.CheckString(1)
 	pass := L.CheckString(2)
-	obj := auth.NewAudit(auth.NewNativeSingle(name, pass, auth.AllPermissions), new(Audit))
+
+	a := new(Audit)
+	a.CodeVM = L.CodeVM
+
+	obj := auth.NewAudit(auth.NewNativeSingle(name, pass, auth.AllPermissions), a)
 	L.Push(L.NewAnyData(obj))
 	return 1
 }

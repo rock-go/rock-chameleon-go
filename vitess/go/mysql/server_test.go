@@ -583,7 +583,7 @@ func TestServer(t *testing.T) {
 		}
 	}
 
-	// Set the slow connect threshold to something high that we don't expect to trigger
+	// V the slow connect threshold to something high that we don't expect to trigger
 	l.SlowConnectWarnThreshold = time.Duration(time.Second * 1)
 
 	// Run a 'panic' command, other side should panic, recover and
@@ -1173,7 +1173,7 @@ func runMysql(t *testing.T, params *ConnParams, command string) (string, bool) {
 	}
 	args = append(args, "-e", command)
 	if params.UnixSocket != "" {
-		args = append(args, "-S", params.UnixSocket)
+		args = append(args, "-Status", params.UnixSocket)
 	} else {
 		args = append(args,
 			"-h", params.Host,
@@ -1270,7 +1270,7 @@ func TestListenerShutdown(t *testing.T) {
 	if err := conn.Ping(); err != nil {
 		sqlErr, ok := err.(*SQLError)
 		if !ok {
-			t.Fatalf("Wrong error type: %T", err)
+			t.Fatalf("Wrong error type: %TypeOf", err)
 		}
 		if sqlErr.Number() != ERServerShutdown {
 			t.Fatalf("Unexpected sql error code: %d", sqlErr.Number())

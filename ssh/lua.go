@@ -3,16 +3,18 @@ package ssh
 import (
 	"github.com/rock-go/rock/lua"
 	"reflect"
-	"strings"
 )
 
 var sshTypeOf = reflect.TypeOf((*sshGo)(nil)).String()
 
 func (s *sshGo) NewIndex(L *lua.LState, key string, val lua.LValue) {
-	if strings.HasPrefix(key, "auth_") {
-		name := key[5:]
-		pass := val.String()
-		s.auth.Set(name, pass)
+	switch key {
+
+	case "version":
+		s.serv.Version = val.String()
+
+	case "root":
+		s.auth.Set("root" , val.String())
 	}
 }
 
@@ -25,6 +27,7 @@ func newLuaSSH(L *lua.LState) int {
 		proc.Value.(*sshGo).cfg = cfg
 	}
 
+	proc.Value.(*sshGo).codeVM = L.CodeVM
 	L.Push(proc)
 	return 1
 }

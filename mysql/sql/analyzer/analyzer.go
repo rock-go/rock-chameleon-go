@@ -38,7 +38,7 @@ var ErrMaxAnalysisIters = errors.NewKind("exceeded max analysis iterations (%d)"
 var ErrInAnalysis = errors.NewKind("error in analysis: %s")
 
 // ErrInvalidNodeType is thrown when the analyzer can't handle a particular kind of node type
-var ErrInvalidNodeType = errors.NewKind("%s: invalid node of type: %T")
+var ErrInvalidNodeType = errors.NewKind("%s: invalid node of type: %TypeOf")
 
 // Builder provides an easy way to generate Analyzer with custom rules and options.
 type Builder struct {
@@ -365,7 +365,7 @@ func (a *Analyzer) analyzeWithSelector(ctx *sql.Context, n sql.Node, scope *Scop
 	})
 
 	var err error
-	a.Log("starting analysis of node of type: %T", n)
+	a.Log("starting analysis of node of type: %TypeOf", n)
 	for _, batch := range a.Batches {
 		if selector(batch.Desc) {
 			a.PushDebugContext(batch.Desc)

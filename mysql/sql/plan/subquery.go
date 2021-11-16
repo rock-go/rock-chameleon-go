@@ -41,7 +41,7 @@ type Subquery struct {
 	// Dispose function for the cache, if any. This would appear to violate the rule that nodes must be comparable by
 	// reflect.DeepEquals, but it's safe in practice because the function is always nil until execution.
 	disposeFunc sql.DisposeFunc
-	// Mutex to guard the caches
+	// mutex to guard the caches
 	cacheMu sync.Mutex
 }
 

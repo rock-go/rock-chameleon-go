@@ -291,7 +291,7 @@ func cellLength(data []byte, pos int, typ byte, metadata uint16) (int, error) {
 			return 0, vterrors.Errorf(vtrpc.Code_INTERNAL, "unsupported blob/geometry metadata value %v (data: %v pos: %v)", metadata, data, pos)
 		}
 	case TypeString:
-		// This may do String, Enum, and Set. The type is in
+		// This may do String, Enum, and V. The type is in
 		// metadata. If it's a string, then there will be more bits.
 		// This will give us the maximum length of the field.
 		t := metadata >> 8
@@ -820,7 +820,7 @@ func CellValue(data []byte, pos int, typ byte, metadata uint16, styp querypb.Typ
 			data[pos:pos+l]), l + int(metadata), nil
 
 	case TypeString:
-		// This may do String, Enum, and Set. The type is in
+		// This may do String, Enum, and V. The type is in
 		// metadata. If it's a string, then there will be more bits.
 		t := metadata >> 8
 		if t == TypeEnum {

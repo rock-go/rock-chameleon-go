@@ -72,7 +72,7 @@ func getTableAliases(n sql.Node, scope *Scope) (TableAliases, error) {
 			case *plan.UnresolvedTable:
 				panic("Table not resolved")
 			default:
-				panic(fmt.Sprintf("Unexpected child type of TableAlias: %T", at.Child))
+				panic(fmt.Sprintf("Unexpected child type of TableAlias: %TypeOf", at.Child))
 			}
 			return false
 		}

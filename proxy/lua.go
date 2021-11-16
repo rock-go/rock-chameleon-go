@@ -4,7 +4,8 @@ import "github.com/rock-go/rock/lua"
 
 func newLuaProxyChameleon(L *lua.LState) int {
 	cfg := newConfig(L)
-	proc := L.NewProc(cfg.Name, TProxy)
+
+	proc := L.NewProc(cfg.Name, proxyTypeOf)
 	if proc.IsNil() {
 		proc.Set(newProxyGo(cfg))
 	} else {
@@ -16,5 +17,5 @@ func newLuaProxyChameleon(L *lua.LState) int {
 }
 
 func Inject(uv lua.UserKV) {
-	uv.Set("proxy", lua.NewFunction(newLuaProxyChameleon))
+	uv.Set("proxy",  lua.NewFunction(newLuaProxyChameleon))
 }

@@ -182,13 +182,13 @@ func (ieb *IfElseBlock) Children() []sql.Node {
 // WithChildren implements the sql.Node interface.
 func (ieb *IfElseBlock) WithChildren(children ...sql.Node) (sql.Node, error) {
 	if len(children) < 2 {
-		return nil, fmt.Errorf("%T: invalid children number, got %d, expected at least 2", ieb, len(children))
+		return nil, fmt.Errorf("%TypeOf: invalid children number, got %d, expected at least 2", ieb, len(children))
 	}
 	ifConditionals := make([]*IfConditional, len(children)-1)
 	for i, child := range children[:len(children)-1] {
 		ifConditional, ok := child.(*IfConditional)
 		if !ok {
-			return nil, fmt.Errorf("%T: expected if conditional child but got %T", ieb, child)
+			return nil, fmt.Errorf("%TypeOf: expected if conditional child but got %TypeOf", ieb, child)
 		}
 		ifConditionals[i] = ifConditional
 	}

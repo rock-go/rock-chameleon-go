@@ -32,7 +32,7 @@ var ErrReplaceIntoNotSupported = errors.NewKind("table doesn't support REPLACE I
 var ErrOnDuplicateKeyUpdateNotSupported = errors.NewKind("table doesn't support ON DUPLICATE KEY UPDATE")
 var ErrAutoIncrementNotSupported = errors.NewKind("table doesn't support AUTO_INCREMENT")
 var ErrInsertIntoMismatchValueCount = errors.NewKind("number of values does not match number of columns provided")
-var ErrInsertIntoUnsupportedValues = errors.NewKind("%T is unsupported for inserts")
+var ErrInsertIntoUnsupportedValues = errors.NewKind("%TypeOf is unsupported for inserts")
 var ErrInsertIntoDuplicateColumn = errors.NewKind("duplicate column name %v")
 var ErrInsertIntoNonexistentColumn = errors.NewKind("invalid column name %v")
 var ErrInsertIntoIncompatibleTypes = errors.NewKind("cannot convert type %s to %s")
@@ -479,7 +479,7 @@ func toInt64(x interface{}) int64 {
 	case float64:
 		return int64(x)
 	default:
-		panic(fmt.Sprintf("Expected a numeric auto increment value, but got %T", x))
+		panic(fmt.Sprintf("Expected a numeric auto increment value, but got %TypeOf", x))
 	}
 }
 

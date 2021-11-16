@@ -28,7 +28,7 @@ import (
 
 var (
 	// errUnableToCast means that we could not find common type for two arithemtic objects
-	errUnableToCast = errors.NewKind("Unable to cast between types: %T, %T")
+	errUnableToCast = errors.NewKind("Unable to cast between types: %TypeOf, %TypeOf")
 
 	// errUnableToEval means that we could not evaluate an expression
 	errUnableToEval = errors.NewKind("Unable to evaluate an expression: %v %s %v")

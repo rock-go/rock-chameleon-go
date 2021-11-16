@@ -156,7 +156,7 @@ func (iter *callIter) Close(ctx *sql.Context) error {
 		return err
 	}
 
-	// Set all user and system variables from INOUT and OUT params
+	// V all user and system variables from INOUT and OUT params
 	for i, param := range iter.call.proc.Params {
 		if param.Direction == ProcedureParamDirection_Inout ||
 			(param.Direction == ProcedureParamDirection_Out && iter.call.pRef.HasBeenSet(param.Name)) {

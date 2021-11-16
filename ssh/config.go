@@ -1,14 +1,15 @@
 package ssh
 
 import (
+	"github.com/rock-go/rock/auxlib"
 	"github.com/rock-go/rock/lua"
-	"github.com/rock-go/rock/utils"
 )
 
 type config struct {
-	name   string
-	bind   string
-	prompt string
+	name    string
+	bind    string
+	prompt  string
+	version string
 }
 
 func newConfig(L *lua.LState) *config {
@@ -23,6 +24,9 @@ func newConfig(L *lua.LState) *config {
 			cfg.bind = val.String()
 		case "prompt":
 			cfg.prompt = val.String()
+		case "version":
+			cfg.version = val.String()
+
 		default:
 			L.RaiseError("not found %s key", key.String())
 		}
@@ -38,7 +42,7 @@ func newConfig(L *lua.LState) *config {
 }
 
 func (cfg *config) verify() error {
-	if e := utils.Name(cfg.name); e != nil {
+	if e := auxlib.Name(cfg.name); e != nil {
 		return e
 	}
 
