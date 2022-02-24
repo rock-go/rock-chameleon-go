@@ -19,7 +19,6 @@ package mysql
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"io/ioutil"
 	"net"
 	"os"
@@ -35,9 +34,9 @@ import (
 )
 
 var (
-	mysqlAuthServerStaticFile           = flag.String("mysql_auth_server_static_file", "", "JSON File to read the users/passwords from.")
-	mysqlAuthServerStaticString         = flag.String("mysql_auth_server_static_string", "", "JSON representation of the users/passwords config.")
-	mysqlAuthServerStaticReloadInterval = flag.Duration("mysql_auth_static_reload_interval", 0, "Ticker to reload credentials")
+	mysqlAuthServerStaticFile           = ""
+	mysqlAuthServerStaticString         = ""
+	mysqlAuthServerStaticReloadInterval = time.Duration(0)
 )
 
 const (
@@ -81,18 +80,18 @@ type AuthServerStaticEntry struct {
 // InitAuthServerStatic Handles initializing the AuthServerStatic if necessary.
 func InitAuthServerStatic() {
 	// Check parameters.
-	if *mysqlAuthServerStaticFile == "" && *mysqlAuthServerStaticString == "" {
+	if mysqlAuthServerStaticFile == "" && mysqlAuthServerStaticString == "" {
 		// Not configured, nothing to do.
 		log.Infof("Not configuring AuthServerStatic, as mysql_auth_server_static_file and mysql_auth_server_static_string are empty")
 		return
 	}
-	if *mysqlAuthServerStaticFile != "" && *mysqlAuthServerStaticString != "" {
+	if mysqlAuthServerStaticFile != "" && mysqlAuthServerStaticString != "" {
 		// Both parameters specified, can only use one.
 		log.Exitf("Both mysql_auth_server_static_file and mysql_auth_server_static_string specified, can only use one.")
 	}
 
 	// Create and register auth server.
-	RegisterAuthServerStaticFromParams(*mysqlAuthServerStaticFile, *mysqlAuthServerStaticString)
+	RegisterAuthServerStaticFromParams(mysqlAuthServerStaticFile, mysqlAuthServerStaticString)
 }
 
 // NewAuthServerStatic returns a new empty AuthServerStatic.
@@ -144,7 +143,7 @@ func (a *AuthServerStatic) loadConfigFromParams(file, str string) {
 }
 
 func (a *AuthServerStatic) installSignalHandlers() {
-	if *mysqlAuthServerStaticFile == "" {
+	if mysqlAuthServerStaticFile == "" {
 		return
 	}
 
@@ -152,18 +151,18 @@ func (a *AuthServerStatic) installSignalHandlers() {
 	signal.Notify(sigChan, syscall.SIGHUP)
 	go func() {
 		for range sigChan {
-			a.loadConfigFromParams(*mysqlAuthServerStaticFile, "")
+			a.loadConfigFromParams(mysqlAuthServerStaticFile, "")
 		}
 	}()
 
 	// If duration is set, it will reload configuration every interval
-	if *mysqlAuthServerStaticReloadInterval > 0 {
-		ticker := time.NewTicker(*mysqlAuthServerStaticReloadInterval)
+	if mysqlAuthServerStaticReloadInterval > 0 {
+		ticker := time.NewTicker(mysqlAuthServerStaticReloadInterval)
 		go func() {
 			for {
 				select {
 				case <-ticker.C:
-					if *mysqlAuthServerStaticReloadInterval <= 0 {
+					if mysqlAuthServerStaticReloadInterval <= 0 {
 						ticker.Stop()
 						return
 					}

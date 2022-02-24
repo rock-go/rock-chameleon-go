@@ -74,7 +74,7 @@ func TestLogEvent(t *testing.T) {
 	for i, testValue := range testValues {
 		LogEvent(ml, testValue.event)
 		if got, want := ml.Events[i].Value, testValue.expected; got != want {
-			t.Errorf("ml.Events[%v].Value = %q, want %q", i, got, want)
+			t.Errorf("ml.Events[%v].Data = %q, want %q", i, got, want)
 		}
 		// Skip the check below if go test -race is run because then the stack
 		// is shifted by one and the test would fail.
@@ -122,7 +122,7 @@ func TestChannelLogger(t *testing.T) {
 	count := 0
 	for e := range cl.C {
 		if got, want := e.Value, "test 123"; got != want {
-			t.Errorf("e.Value = %q, want %q", got, want)
+			t.Errorf("e.Data = %q, want %q", got, want)
 		}
 		if e.File != "logger_test.go" {
 			t.Errorf("Invalid file name: %v", e.File)
@@ -168,7 +168,7 @@ func TestTeeLogger(t *testing.T) {
 				t.Errorf("[%v] events[%v].Level = %s, want %s", i, j, got.Level, want.Level)
 			}
 			if got.Value != want.Value {
-				t.Errorf("[%v] events[%v].Value = %q, want %q", i, j, got.Value, want.Value)
+				t.Errorf("[%v] events[%v].Data = %q, want %q", i, j, got.Value, want.Value)
 			}
 			// Skip the check below if go test -race is run because then the stack
 			// is shifted by one and the test would fail.

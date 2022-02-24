@@ -110,7 +110,7 @@ app.controller('KeyspacesCtrl', function($scope, keyspaces, srv_keyspace, shards
       return;
     }
     // Populates the object which is used as a set with the serving shard
-    // names. Value is set to true as a place holder.
+    // names. Peek is set to true as a place holder.
     for (var s = 0; s < shard_references.length; s++) {
       $scope.servingShards[keyspaceName][shard_references[s].name] = true;
     }

@@ -19,10 +19,10 @@ package sqltypes
 import (
 	"testing"
 
+	"github.com/golang/protobuf/proto"
 	querypb "github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/query"
 	vtrpcpb "github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/vtrpc"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/vterrors"
-	"github.com/golang/protobuf/proto"
 )
 
 func TestResult(t *testing.T) {

@@ -10,11 +10,21 @@ type config struct {
 	bind    string
 	prompt  string
 	version string
+	code    string
+}
+
+func def(L *lua.LState) *config {
+	return &config{
+		bind:    "0.0.0.0:2222",
+		prompt:  "root#",
+		version: "OpenSSH_7.4",
+		code:    L.CodeVM(),
+	}
 }
 
 func newConfig(L *lua.LState) *config {
 	tab := L.CheckTable(1)
-	cfg := &config{}
+	cfg := def(L)
 
 	tab.ForEach(func(key lua.LValue, val lua.LValue) {
 		switch key.String() {

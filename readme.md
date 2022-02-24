@@ -38,7 +38,7 @@ infos.insert("suncle" , "456@qq.com" , 20 , "123654")
 local rock_db = mysql.new_db("rock_db") --新建database
 rock_db.add_table( users , infos) --添加表结构
 
-proc.start(mysql.new{
+start(mysql.new{
     name = "mysql", 
     bind = "0.0.0.0:3308",
     database = rock_db,
@@ -63,45 +63,38 @@ proc.start(ssh_s)
 
 ## proxy
 代理型蜜罐
+- userdata = chamemleon.proxy{name , bind , remote}
+#### 方法
+- [userdata.pipe(v,...)]()
+- [userdata.start()]()
 ```lua
-local proxy = chameleon.proxy
-local proxy_mysql = proxy{
-    name = "proxy_mysql",
-    bind = "0.0.0.0:3310",     --对外端口
-    remote = "127.0.0.1:3308", --后端地址
-    protocol = "tcp",
+local ud = chameleon.proxy{
+    name = "mysql2",
+    bind = "tcp://0.0.0.0:3310",     --对外端口
+    remote = "tcp://127.0.0.1:3308", --后端地址
 }
+ud.pipe(function(ev) 
+   --audit.event 
+end)
 
-proc.start(proxy_mysql)
+ud.start()
+```
 
-local proxy_ssh = proxy{
-    name = "proxy_ssh",
-    bind = "0.0.0.0:1222",      --对外端口
-    remote = "172.31.61.91:22", --后端地址
-    protocol = "tcp",
+## stream
+- 二级代理 client->tunnel->remote
+- userdata = chameleon.stream{name , bind , remote} 
+#### 方法
+- [userdata.pipe(v , ...)]()
+- [userdata.start()]()
+```lua
+local ud = chameleon.stream{
+    name = "mysql3",
+    bind = "tcp://0.0.0.0:3310",     --对外端口
+    remote = "tcp://127.0.0.1:3308", --后端地址
 }
+ud.pipe(function(ev)
+    --audit.event 
+end)
 
-proc.start(proxy_ssh)
-
-
-```
-
-## ftp
-```lua
---todo
-```
-
-## smb
-```lua
---todo
-```
-
-## rdp
-```lua
---todo
-```
-
-## redis
-```lua
---todo
+ud.start()
 ```

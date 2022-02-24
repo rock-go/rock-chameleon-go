@@ -28,7 +28,7 @@ import (
 // This file contains the proto3 conversion functions for the structures
 // defined here.
 
-// RowToProto3 converts []Value to proto3.
+// RowToProto3 converts []Data to proto3.
 func RowToProto3(row []Value) *querypb.Row {
 	result := &querypb.Row{}
 	result.Lengths = make([]int64, 0, len(row))
@@ -52,7 +52,7 @@ func RowToProto3(row []Value) *querypb.Row {
 	return result
 }
 
-// RowsToProto3 converts [][]Value to proto3.
+// RowsToProto3 converts [][]Data to proto3.
 func RowsToProto3(rows [][]Value) []*querypb.Row {
 	if len(rows) == 0 {
 		return nil
@@ -65,7 +65,7 @@ func RowsToProto3(rows [][]Value) []*querypb.Row {
 	return result
 }
 
-// proto3ToRows converts a proto3 rows to [][]Value. The function is private
+// proto3ToRows converts a proto3 rows to [][]Data. The function is private
 // because it uses the trusted API.
 func proto3ToRows(fields []*querypb.Field, rows []*querypb.Row) [][]Value {
 	if len(rows) == 0 {

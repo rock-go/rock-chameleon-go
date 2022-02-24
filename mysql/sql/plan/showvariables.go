@@ -63,7 +63,7 @@ func (sv *ShowVariables) String() string {
 func (*ShowVariables) Schema() sql.Schema {
 	return sql.Schema{
 		&sql.Column{Name: "Variable_name", Type: sql.LongText, Nullable: false},
-		&sql.Column{Name: "Value", Type: sql.LongText, Nullable: true},
+		&sql.Column{Name: "Data", Type: sql.LongText, Nullable: true},
 	}
 }
 

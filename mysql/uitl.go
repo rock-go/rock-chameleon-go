@@ -47,12 +47,12 @@ func checkTableColType(L *lua.LState, val lua.LValue) sql.Type {
 }
 
 func CheckDatabaseTable(L *lua.LState, val lua.LValue) *Table {
-	if val.Type() != lua.LTANYDATA {
+	if val.Type() != lua.LTAnyData {
 		L.RaiseError("invalid type")
 		return nil
 	}
 
-	t, ok := val.(*lua.AnyData).Value.(*Table)
+	t, ok := val.(*lua.AnyData).Data.(*Table)
 	if !ok {
 		L.RaiseError("invalid database table type")
 		return nil

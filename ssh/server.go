@@ -34,8 +34,7 @@ var DefaultChannelHandlers = map[string]ChannelHandler{
 // Server is a valid configuration. When both PasswordHandler and
 // PublicKeyHandler are nil, no client authentication is performed.
 type Server struct {
-
-	CodeVM      func() string
+	CodeVM func() string
 
 	Addr        string   // TCP address to listen on, ":22" if empty
 	Handler     Handler  // handler to invoke, ssh.DefaultHandler if nil
@@ -239,19 +238,16 @@ func (srv *Server) Serve(l net.Listener) error {
 	defer srv.trackListener(l, false)
 	for {
 		conn, e := l.Accept()
-		ev := audit.NewEvent("chameleon" , audit.Subject("honey ssh conn"),audit.From(srv.CodeVM()))
+		ev := audit.NewEvent("chameleon").Subject("高交互SSH蜜罐有新的请求").From(srv.CodeVM()).Alert().High()
 
 		if e != nil {
 			if conn != nil {
-				ev.Set(audit.Remote(conn.RemoteAddr().String()))
-				ev.Set(audit.Msg("honey ssh %s -> %s " , conn.RemoteAddr().String() , conn.LocalAddr().String()) )
-			} else {
-				ev.Set(audit.Msg("conn accept fail"))
+				ev.Remote(conn.RemoteAddr()).Msg("honey ssh %s -> %s ",
+					conn.RemoteAddr().String(), conn.LocalAddr().String())
 			}
 
 			select {
 			case <-srv.getDoneChan():
-				ev.Set(audit.E(ErrServerClosed)).Put()
 				return ErrServerClosed
 			default:
 			}
@@ -268,12 +264,13 @@ func (srv *Server) Serve(l net.Listener) error {
 				continue
 			}
 
-			ev.Set(audit.E(e)).Put()
+			ev.E(e).Put()
+
 			return e
 		}
 
 		ev.Set(audit.Remote(conn.RemoteAddr().String()))
-		ev.Set(audit.Msg("honey ssh %s -> %s " , conn.RemoteAddr().String() , conn.LocalAddr().String()) )
+		ev.Set(audit.Msg("honey ssh %s -> %s ", conn.RemoteAddr().String(), conn.LocalAddr().String()))
 		ev.Put()
 		go srv.HandleConn(conn)
 	}

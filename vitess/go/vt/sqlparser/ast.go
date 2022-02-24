@@ -3846,7 +3846,7 @@ func (node *ExistsExpr) replace(from, to Expr) bool {
 	return false
 }
 
-// ExprFromValue converts the given Value into an Expr or returns an error.
+// ExprFromValue converts the given Data into an Expr or returns an error.
 func ExprFromValue(value sqltypes.Value) (Expr, error) {
 	// The type checks here follow the rules defined in sqltypes/types.go.
 	switch {

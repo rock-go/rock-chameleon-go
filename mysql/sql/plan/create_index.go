@@ -16,6 +16,7 @@ package plan
 
 import (
 	"fmt"
+	"github.com/rock-go/rock/audit"
 	"strings"
 	"time"
 
@@ -26,7 +27,6 @@ import (
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql/expression"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/log"
-	"github.com/rock-go/rock/audit"
 )
 
 var (
@@ -178,12 +178,11 @@ func (c *CreateIndex) RowIter(ctx *sql.Context, row sql.Row) (sql.RowIter, error
 		return nil, err
 	}
 
-	audit.NewEvent("chameleon",
-		audit.Subject("honey mysql row"),
-		audit.User(ctx.Session.Client().User),
-		audit.Remote(ctx.Client().Address),
-		audit.Msg("id: %s , driver:%s", index.ID(), index.Driver()),
-	).Put()
+	audit.NewEvent("chameleon").Alert().High().
+		Subject("高交互Mysql蜜罐查询记录").
+		User(ctx.Session.Client().User).
+		Remote(ctx.Client().Address).
+		Msg("id: %s , driver:%s", index.ID(), index.Driver()).Put()
 
 	createIndex := func() {
 		c.createIndex(ctx, driver, index, iter, created, ready)

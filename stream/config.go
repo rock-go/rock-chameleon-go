@@ -1,43 +1,19 @@
 package stream
 
 import (
-	"errors"
+	"fmt"
 	"github.com/rock-go/rock/auxlib"
 	"github.com/rock-go/rock/lua"
-	"strings"
+	"github.com/rock-go/rock/pipe"
 )
 
 type config struct {
-	name                 string
-	code                 string
-	bind_network         string
-	bind_address         string
+	name   string
+	bind   auxlib.URL
+	remote auxlib.URL
 
-	remote_network       string
-	remote_address       string
-}
-
-func parseURL(L *lua.LState , vl lua.LValue) (network string , address string) {
-	url := vl.String()
-
-	if len(url) < 12 {
-		L.RaiseError("invalid url")
-		return
-	}
-
-	switch {
-	case strings.HasPrefix(url , "tcp://"):
-		return "tcp" , auxlib.CheckSocket(lua.S2L(url[6:]) , L)
-
-	case strings.HasPrefix(url , "udp://"):
-		return "udp" , auxlib.CheckSocket(lua.S2L(url[6:]) , L)
-
-	default:
-
-		L.RaiseError("invalid url , must be tcp://x.x.x.x:80 , got: %s" , url)
-		return
-
-	}
+	pipe []pipe.Pipe
+	co   *lua.LState
 }
 
 func newConfig(L *lua.LState) *config {
@@ -48,36 +24,41 @@ func newConfig(L *lua.LState) *config {
 		case "name":
 			cfg.name = auxlib.CheckProcName(lv, L)
 		case "bind":
-			cfg.bind_network , cfg.bind_address = parseURL(L , lv)
+			cfg.bind = auxlib.CheckURL(lv, L)
 		case "remote":
-			cfg.remote_network , cfg.remote_address = parseURL(L , lv)
+			cfg.remote = auxlib.CheckURL(lv, L)
 
 		default:
 			//todo
 		}
-
 	})
 
 	if e := cfg.verify(); e != nil {
 		L.RaiseError("%v", e)
 		return nil
 	}
-	cfg.code = L.CodeVM()
+	cfg.co = xEnv.Clone(L)
 
 	return cfg
 }
 
 func (cfg *config) verify() error {
-	if  err := auxlib.Name(cfg.name); err != nil {
+	if err := auxlib.Name(cfg.name); err != nil {
 		return err
 	}
 
-	if cfg.remote_address == "" || cfg.remote_network == "" {
-		return errors.New("invalid remote socket cfg")
+	switch cfg.bind.Scheme() {
+	case "tcp", "udp", "unix":
+		return nil
+	default:
+		return fmt.Errorf("%s invalid bind url", cfg.name)
 	}
 
-	if 	cfg.bind_network == "" || cfg.bind_address == "" {
-		return errors.New("invalid bind socket cfg")
+	switch cfg.remote.Scheme() {
+	case "tcp", "udp", "unix":
+		return nil
+	default:
+		return fmt.Errorf("%s invalid remote url", cfg.name)
 	}
 
 	return nil

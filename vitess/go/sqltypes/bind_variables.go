@@ -30,12 +30,12 @@ import (
 // NullBindVariable is a bindvar with NULL value.
 var NullBindVariable = &querypb.BindVariable{Type: querypb.Type_NULL_TYPE}
 
-// ValueToProto converts Value to a *querypb.Value.
+// ValueToProto converts Value to a *querypb.Data.
 func ValueToProto(v Value) *querypb.Value {
 	return &querypb.Value{Type: v.typ, Value: v.val}
 }
 
-// ProtoToValue converts a *querypb.Value to a Value.
+// ProtoToValue converts a *querypb.Data to a Value.
 func ProtoToValue(v *querypb.Value) Value {
 	return MakeTrusted(v.Type, v.Value)
 }

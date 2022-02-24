@@ -22,8 +22,8 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/sqlparser"
 	"github.com/opentracing/opentracing-go"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/sqlparser"
 	"gopkg.in/src-d/go-errors.v1"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
@@ -1500,7 +1500,7 @@ func convertLoad(ctx *sql.Context, d *sqlparser.Load) (sql.Node, error) {
 	var ignoreNumVal int64 = 0
 	var err error
 	if d.IgnoreNum != nil {
-		ignoreNumVal, err = getInt64Value(ctx, d.IgnoreNum, "Cannot parse ignore Value")
+		ignoreNumVal, err = getInt64Value(ctx, d.IgnoreNum, "Cannot parse ignore Data")
 		if err != nil {
 			return nil, err
 		}

@@ -30,18 +30,25 @@ package stats
 import (
 	"bytes"
 	"expvar"
-	"flag"
 	"fmt"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/log"
 	"strconv"
 	"sync"
 	"time"
-
-	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/log"
 )
 
-var emitStats = flag.Bool("emit_stats", false, "true iff we should emit stats to push-based monitoring/stats backends")
-var statsEmitPeriod = flag.Duration("stats_emit_period", time.Duration(60*time.Second), "Interval between emitting stats to all registered backends")
-var statsBackend = flag.String("stats_backend", "", "The name of the registered push-based monitoring/stats backend to use")
+var emitStats *bool
+var statsEmitPeriod *time.Duration
+var statsBackend *string
+
+func init() {
+	f := false
+	t := time.Duration(60 * time.Second)
+	b := ""
+	emitStats = &f
+	statsEmitPeriod = &t
+	statsBackend = &b
+}
 
 // NewVarHook is the type of a hook to export variables in a different way
 type NewVarHook func(name string, v expvar.Var)

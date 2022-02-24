@@ -9,12 +9,12 @@ import (
 )
 
 type config struct {
-	Name        string    `lua:"name"     type:"string"`
-	Bind        string    `lua:"bind"     type:"string"`
-	Auth        auth.Auth `lua:"auth"     type:"object"`
-	Database    *EngineDB `lua:"database" type:"object"`
+	Name     string    `lua:"name"     type:"string"`
+	Bind     string    `lua:"bind"     type:"string"`
+	Auth     auth.Auth `lua:"auth"     type:"object"`
+	Database *EngineDB `lua:"database" type:"object"`
 
-	CodeVM      string
+	CodeVM string
 }
 
 func newConfig(L *lua.LState) *config {

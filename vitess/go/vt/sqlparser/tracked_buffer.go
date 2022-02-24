@@ -54,7 +54,7 @@ func (buf *TrackedBuffer) WriteNode(node SQLNode) *TrackedBuffer {
 }
 
 // Myprintf mimics fmt.Fprintf(buf, ...), but limited to Node(%v),
-// Node.Value(%s) and string(%s). It also allows a %a for a value argument, in
+// Node.Data(%s) and string(%s). It also allows a %a for a value argument, in
 // which case it adds tracking info for future substitutions.
 //
 // The name must be something other than the usual Printf() to avoid "go vet"

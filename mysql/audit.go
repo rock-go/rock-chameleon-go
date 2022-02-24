@@ -7,21 +7,21 @@ import (
 	"time"
 )
 
-type Audit struct{
-	CodeVM 	func() string
+type Audit struct {
+	CodeVM func() string
 }
 
 func (a *Audit) Authentication(user, addr string, err error) {
-	ev := audit.NewEvent("chameleon" ,
-		audit.Subject("honey mysql auth") ,
-		audit.From(a.CodeVM()),
-		audit.Remote(addr) ,
-		audit.User(user))
+	ev := audit.NewEvent("chameleon").Alert().High().
+		Subject("高交互Mysql蜜罐命中").
+		From(a.CodeVM()).
+		Remote(addr).
+		User(user)
 
 	if err == nil {
-		ev.Set(audit.Msg("honey mysql auth success"))
+		ev.Msg("honey mysql auth success")
 	} else {
-		ev.Set(audit.Msg("honey mysql auth error"), audit.E(err))
+		ev.Msg("honey mysql auth error").E(err)
 	}
 
 	ev.Put()

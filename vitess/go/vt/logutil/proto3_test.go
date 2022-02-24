@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/vttime"
 	"github.com/golang/protobuf/proto"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/vttime"
 )
 
 const (

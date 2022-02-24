@@ -197,16 +197,16 @@ func printJSONValueEntry(data []byte, pos int, large bool, result *bytes.Buffer)
 			return err
 		}
 	case typ == jsonTypeInt16:
-		// Value is always inlined in first 2 bytes.
+		// Data is always inlined in first 2 bytes.
 		printJSONInt16(data[pos:pos+2], false /* toplevel */, result)
 	case typ == jsonTypeUint16:
-		// Value is always inlined in first 2 bytes.
+		// Data is always inlined in first 2 bytes.
 		printJSONUint16(data[pos:pos+2], false /* toplevel */, result)
 	case typ == jsonTypeInt32 && large:
-		// Value is only inlined if large.
+		// Data is only inlined if large.
 		printJSONInt32(data[pos:pos+4], false /* toplevel */, result)
 	case typ == jsonTypeUint32 && large:
-		// Value is only inlined if large.
+		// Data is only inlined if large.
 		printJSONUint32(data[pos:pos+4], false /* toplevel */, result)
 	default:
 		// value is not inlined, we have its offset here.

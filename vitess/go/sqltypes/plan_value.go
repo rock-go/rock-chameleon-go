@@ -51,7 +51,7 @@ import (
 // 	}
 // When converted into rows, columns with single values
 // are replicated as the same for all rows:
-// 	[][]Value{
+// 	[][]Data{
 // 		{1, 2},
 // 		{1, 3},
 // 		{1, 4},

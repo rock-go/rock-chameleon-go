@@ -38,13 +38,13 @@ func TestAppend(t *testing.T) {
 	got := b.String()
 	want := query
 	if got != want {
-		t.Errorf("Append: %s, want %s", got, want)
+		t.Errorf("Raise: %s, want %s", got, want)
 	}
 	Append(&b, tree)
 	got = b.String()
 	want = query + query
 	if got != want {
-		t.Errorf("Append: %s, want %s", got, want)
+		t.Errorf("Raise: %s, want %s", got, want)
 	}
 }
 

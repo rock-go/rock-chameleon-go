@@ -18,8 +18,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
+	"github.com/rock-go/rock-chameleon-go/vitess/go/mysql"
 )
 
 // AuditMethod is called to log the audit trail of actions.

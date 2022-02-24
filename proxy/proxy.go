@@ -2,33 +2,49 @@ package proxy
 
 import (
 	"context"
+	"fmt"
 	"github.com/rock-go/rock/audit"
 	"github.com/rock-go/rock/auxlib"
 	"github.com/rock-go/rock/lua"
-	"github.com/rock-go/rock/thread"
+	"github.com/rock-go/rock/xlib"
 	"net"
 	"reflect"
+	"time"
 )
 
 var proxyTypeOf = reflect.TypeOf((*proxyGo)(nil)).String()
 
 type proxyGo struct {
 	lua.Super
-
 	cfg *config
 	cur config
-
-	ln  *auxlib.Listener
+	ln  *xlib.Listener
 }
 
 func newProxyGo(cfg *config) *proxyGo {
 	p := &proxyGo{cfg: cfg}
-	p.V(lua.INIT , proxyTypeOf)
+	p.V(lua.INIT, proxyTypeOf)
 	return p
 }
 
 func (p *proxyGo) Name() string {
-	return p.cfg.Name
+	return p.cur.Name
+}
+
+func (p *proxyGo) Code() string {
+	return p.cfg.co.CodeVM()
+}
+
+func (p *proxyGo) equal() bool {
+	if p.cur.Bind.String() != p.cfg.Bind.String() {
+		return false
+	}
+
+	if p.cur.Remote.String() != p.cfg.Remote.String() {
+		return false
+	}
+
+	return true
 }
 
 func (p *proxyGo) Listen() error {
@@ -37,16 +53,8 @@ func (p *proxyGo) Listen() error {
 		goto conn
 	}
 
-	if  p.cfg.Bind == p.cur.Bind &&
-		p.cfg.Protocol == p.cur.Protocol {
-
-		p.cur = *p.cfg
-		p.ln.CloseActiveConn()
-		return nil
-	}
-
 conn:
-	ln , err := auxlib.Listen(p.cfg.Protocol, p.cfg.Bind)
+	ln, err := xlib.Listen(p.cfg.Bind)
 	if err != nil {
 		return err
 	}
@@ -63,70 +71,110 @@ func (p *proxyGo) Start() error {
 	}
 
 	var err error
-	thread.Spawn(3000 , func(){ err = p.ln.OnAccept(p.accept)})
+	xEnv.Spawn(100, func() { err = p.ln.OnAccept(p.accept) })
 	return err
 }
 
-func (p *proxyGo) Reload() error {
-	return p.Listen()
-}
+//func (p *proxyGo) Reload() error {
+//	return p.Listen()
+//}
 
 func (p *proxyGo) Close() error {
 	e := p.ln.Close()
 	return e
 }
 
-func (p *proxyGo) accept(ctx context.Context , conn net.Conn , stop context.CancelFunc) error {
-	ev := audit.NewEvent("chameleon",
-		audit.Subject("proxy honey conn hit"),
-		audit.From(p.cur.code),
-		audit.Remote(conn.RemoteAddr()))
+func (p *proxyGo) dail(conn net.Conn) (net.Conn, error) {
 
-	dst , err := net.Dial(p.cur.Protocol , p.cur.Remote)
-	if err != nil {
-		ev.Msg("%s 服务端口:%s 后端地址:%s 链接失败",p.Name(), p.cfg.Bind, p.cfg.Remote).E(err).Log().Put()
-	} else {
-		ev.Msg("%s 服务端口:%s 后端地址:%s 链接成功",p.Name(), p.cfg.Bind, p.cfg.Remote).Log().Put()
+	host := p.cur.Remote.Hostname()
+	port := p.cur.Remote.Port()
+
+	if port == 0 {
+		_, port = auxlib.ParseAddr(conn.LocalAddr())
 	}
 
-	cancel := func() {
-		stop()
-		dst.Close()
+	if port == 0 {
+		return nil, fmt.Errorf("invalid stream port")
 	}
 
-	thread.Spawn(100 , func() {
-		defer cancel()
-		var toTn int64
+	d := net.Dialer{Timeout: 2 * time.Second}
+	return d.Dial(p.cur.Remote.Scheme(), fmt.Sprintf("%s:%d", host, port))
+}
 
-		ev = audit.NewEvent("chameleon" , audit.From(p.cur.code) , audit.Remote(conn.RemoteAddr()))
+func (p *proxyGo) pipe(ev *audit.Event) {
+	n := len(p.cur.pipe)
+	if n == 0 {
+		ev.Log().Put()
+		return
+	}
 
-		toTn , err = auxlib.Copy(ctx, dst , conn)
-		ev.Msg("%s ")
-		if err != nil {
-			ev.Subject("proxy honey conn close")
-			ev.Msg("程序名称: %s\n  代理关闭 \n发送:%d 原因:%v" , p.Name() ,toTn , err )
-			ev.E(err).Log()
+	for i := 0; i < n; i++ {
+		pipe := p.cur.pipe[i]
+		if e := pipe(ev, p.cur.co); e != nil {
+			xEnv.Errorf("%s pipe call fail %v", p.Name(), e)
 		} else {
-			ev.Subject("proxy honey conn over")
-			ev.Msg("程序名称: %s 发送到远程 发送:%d 原因:%v" , p.Name() ,toTn , err)
-			ev.Log().Put()
+			//xEnv.Errorf("%#v" , ev)
+		}
+
+	}
+}
+
+func (p *proxyGo) accept(ctx context.Context, conn net.Conn, stop context.CancelFunc) error {
+
+	ev := audit.NewEvent("chameleon").Alert().High().
+		Subject("高交互代理蜜罐有新的请求").
+		From(p.cur.co.CodeVM()).
+		Remote(conn.RemoteAddr())
+
+	dst, err := p.dail(conn)
+	if err != nil {
+		ev.Msg("%s 服务端口:%s 后端地址:%s 链接失败", p.Name(), conn.LocalAddr().String(),
+			p.cfg.Remote).E(err)
+		p.pipe(ev)
+		return err
+
+	} else {
+		ev.Msg("%s 服务端口:%s 后端地址:%s 链接成功", p.Name(), conn.LocalAddr().String(),
+			dst.RemoteAddr().String())
+		p.pipe(ev)
+	}
+
+	xEnv.Spawn(50, func() {
+		defer func() {
+			stop()
+			conn.Close()
+		}()
+
+		var toTn int64
+		ev = audit.NewEvent("chameleon").From(p.cur.co.CodeVM()).Remote(conn).Alert().High()
+
+		toTn, err = auxlib.Copy(ctx, dst, conn)
+		if err != nil {
+			ev.Subject("高交互代理蜜罐关闭请求").Msg("程序名称:%s 代理关闭 发送:%d", p.Name(), toTn).E(err)
+			p.pipe(ev)
+		} else {
+			ev.Subject("高交互代理蜜罐请求结束").Msg("程序名称: %s 发送到远程 发送:%d", p.Name(), toTn)
+			p.pipe(ev)
 		}
 	})
 
-	thread.Spawn(100 , func() {
-		defer cancel()
+	xEnv.Spawn(50, func() {
+		defer func() {
+			stop()
+			dst.Close()
+		}()
 		var rev int64
 
-		ev = audit.NewEvent("chameleon" , audit.From(p.cur.code) , audit.Remote(conn.RemoteAddr()))
-		rev , err = auxlib.Copy(ctx, conn , dst)
+		ev = audit.NewEvent("chameleon").From(p.cur.co.CodeVM()).Remote(conn).Alert().High()
+		rev, err = auxlib.Copy(ctx, conn, dst)
 		if err != nil {
-			ev.Subject("proxy honey conn close")
-			ev.Msg("程序名称: %s 接收远程失败:%d 原因:%v" , p.Name() , rev , err )
-			ev.E(err).Log().Put()
+			ev.Subject("高交互代理蜜罐关闭请求").Msg("程序名称:%s 接收远程失败:%d", p.Name(), rev).E(err)
+			p.pipe(ev)
+
 		} else {
-			ev.Subject("proxy honey conn over")
-			ev.Msg("程序名称: %s 接收远程结束 数量:%d 原因:%v" , p.Name() , rev , err )
-			ev.Log().Put()
+			ev.Subject("高交互代理蜜罐请求结束").
+				Msg("程序名称:%s 接收远程结束 数量:%d", p.Name(), rev)
+			p.pipe(ev)
 		}
 	})
 

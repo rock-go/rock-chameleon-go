@@ -31,7 +31,7 @@ CLIENT_FOUND_ROWS
 
 The doc says:
 Send found rows instead of affected rows in EOF_Packet.
-Value
+Data
 0x00000002
 
 We just pass it through to the server.

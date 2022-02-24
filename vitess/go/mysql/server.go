@@ -121,7 +121,7 @@ type Handler interface {
 // Listener is the MySQL server protocol listener.
 type Listener struct {
 	// Construction parameters, set by NewListener.
-	CodeVM    func() string
+	CodeVM func() string
 	// authServer is the AuthServer object to use for authentication.
 	authServer AuthServer
 

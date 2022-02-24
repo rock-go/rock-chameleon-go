@@ -20,9 +20,9 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/pmezard/go-difflib/difflib"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/sqltypes"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/sqlparser"
-	"github.com/pmezard/go-difflib/difflib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/src-d/go-errors.v1"

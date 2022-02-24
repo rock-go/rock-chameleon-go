@@ -2,10 +2,14 @@ package ssh
 
 import (
 	"github.com/rock-go/rock/lua"
+	"github.com/rock-go/rock/xbase"
 	"reflect"
 )
 
-var sshTypeOf = reflect.TypeOf((*sshGo)(nil)).String()
+var (
+	xEnv      *xbase.EnvT
+	sshTypeOf = reflect.TypeOf((*sshGo)(nil)).String()
+)
 
 func (s *sshGo) NewIndex(L *lua.LState, key string, val lua.LValue) {
 	switch key {
@@ -14,7 +18,7 @@ func (s *sshGo) NewIndex(L *lua.LState, key string, val lua.LValue) {
 		s.serv.Version = val.String()
 
 	case "root":
-		s.auth.Set("root" , val.String())
+		s.auth.Set("root", val.String())
 	}
 }
 
@@ -24,14 +28,14 @@ func newLuaSSH(L *lua.LState) int {
 	if proc.IsNil() {
 		proc.Set(newSSH(cfg))
 	} else {
-		proc.Value.(*sshGo).cfg = cfg
+		proc.Data.(*sshGo).cfg = cfg
 	}
 
-	proc.Value.(*sshGo).codeVM = L.CodeVM
 	L.Push(proc)
 	return 1
 }
 
-func Inject(uv lua.UserKV) {
+func Inject(env *xbase.EnvT, uv lua.UserKV) {
+	xEnv = env
 	uv.Set("ssh", lua.NewFunction(newLuaSSH))
 }

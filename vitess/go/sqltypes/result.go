@@ -19,8 +19,8 @@ package sqltypes
 import (
 	"reflect"
 
-	querypb "github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/query"
 	"github.com/golang/protobuf/proto"
+	querypb "github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/query"
 )
 
 // Result represents a query result.
@@ -181,7 +181,7 @@ func ResultsEqual(r1, r2 []Result) bool {
 	return true
 }
 
-// MakeRowTrusted converts a *querypb.Row to []Value based on the types
+// MakeRowTrusted converts a *querypb.Row to []Data based on the types
 // in fields. It does not sanity check the values against the type.
 // Every place this function is called, a comment is needed that explains
 // why it's justified.

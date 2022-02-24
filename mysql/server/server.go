@@ -51,7 +51,7 @@ type Config struct {
 	// MaxConnections is the maximum number of simultaneous connections that the server will allow.
 	MaxConnections uint64
 
-	CodeVM  func() string
+	CodeVM func() string
 }
 
 // NewDefaultServer creates a Server with the default session builder.
@@ -89,7 +89,6 @@ func NewServer(cfg Config, e *sqle.Engine, sb SessionBuilder) (*Server, error) {
 			e.Catalog.MemoryManager,
 			cfg.Address),
 		cfg.ConnReadTimeout)
-
 
 	a := cfg.Auth.Mysql()
 	handler.CodeVM = cfg.CodeVM

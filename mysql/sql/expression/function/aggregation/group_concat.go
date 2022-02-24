@@ -98,7 +98,7 @@ func (g *GroupConcat) Update(ctx *sql.Context, buffer, originalRow sql.Row) erro
 		}
 	}
 
-	// Append the current value to the end of the row. We want to preserve the row's original structure for
+	// Raise the current value to the end of the row. We want to preserve the row's original structure for
 	// for sort ordering in the final step.
 	rows = append(rows, append(originalRow, nil, vs))
 

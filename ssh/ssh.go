@@ -6,7 +6,6 @@ import (
 	"github.com/rock-go/rock/audit"
 	"github.com/rock-go/rock/logger"
 	"github.com/rock-go/rock/lua"
-	"github.com/rock-go/rock/thread"
 )
 
 type sshGo struct {
@@ -17,14 +16,12 @@ type sshGo struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
-	codeVM func() string
-
 	serv *Server
 }
 
 func newSSH(cfg *config) *sshGo {
 	s := &sshGo{cfg: cfg}
-	s.V(lua.INIT , sshTypeOf)
+	s.V(lua.INIT, sshTypeOf)
 	s.auth = &auth{data: make(map[string]string)}
 	return s
 }
@@ -34,13 +31,13 @@ func (s *sshGo) Name() string {
 }
 
 func (s *sshGo) event(ctx Context, pass string, err error) {
-	audit.NewEvent("chameleon" ,
-		audit.Subject("ssh auth fail") ,
-		audit.From(s.codeVM()) ,
-		audit.User(ctx.User()) ,
-		audit.Remote(ctx.RemoteAddr().String()),
-		audit.Msg("pass: %s" , pass ),
-		audit.E(err)).Put()
+	audit.NewEvent("chameleon").Alert().High().
+		Subject("高交互SSH蜜罐认证失败").
+		From(s.cfg.code).
+		User(ctx.User()).
+		Remote(ctx.RemoteAddr()).
+		Msg("pass: %s", pass).
+		E(err).Put()
 }
 
 var (
@@ -73,14 +70,13 @@ func (s *sshGo) handler(sess Session) {
 
 func (s *sshGo) Start() error {
 	s.serv = s.cfg.toSSH(s.handler, s.doAuth)
-
-	if s.cfg.version != "" {
-		s.serv.Version = s.cfg.version
+	s.serv.Version = s.cfg.version
+	s.serv.CodeVM = func() string {
+		return s.cfg.code
 	}
 
 	var err error
-	thread.Spawn(1 , func() {
-		s.serv.CodeVM = s.codeVM
+	xEnv.Spawn(100, func() {
 		err = s.serv.ListenAndServe()
 	})
 

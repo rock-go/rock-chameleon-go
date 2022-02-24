@@ -3,7 +3,10 @@ package mysql
 import (
 	"github.com/rock-go/rock-chameleon-go/mysql/auth"
 	"github.com/rock-go/rock/lua"
+	"github.com/rock-go/rock/xbase"
 )
+
+var xEnv *xbase.EnvT
 
 func newLuaMySQL(L *lua.LState) int {
 	cfg := newConfig(L)
@@ -12,7 +15,7 @@ func newLuaMySQL(L *lua.LState) int {
 	if proc.IsNil() {
 		proc.Set(newGoMysql(cfg))
 	} else {
-		proc.Value.(*GoMysql).cfg = cfg
+		proc.Data.(*GoMysql).cfg = cfg
 	}
 	L.Push(proc)
 	return 1
@@ -43,7 +46,9 @@ func newLuaEngineDB(L *lua.LState) int {
 	return 1
 }
 
-func Inject(uv lua.UserKV) {
+func Inject(env *xbase.EnvT, uv lua.UserKV) {
+	xEnv = env
+
 	m := lua.NewUserKV()
 	m.Set("new", lua.NewFunction(newLuaMySQL))
 	m.Set("auth", lua.NewFunction(newLuaAuth))

@@ -27,10 +27,19 @@ import (
 )
 
 var (
-	keepLogsByCtime   = flag.Duration("keep_logs", 0, "keep logs for this long (using ctime) (zero to keep forever)")
-	keepLogsByMtime   = flag.Duration("keep_logs_by_mtime", 0, "keep logs for this long (using mtime) (zero to keep forever)")
-	purgeLogsInterval = flag.Duration("purge_logs_interval", 1*time.Hour, "how often try to remove old logs")
+	keepLogsByCtime   *time.Duration //= flag.Duration("keep_logs", 0, "keep logs for this long (using ctime) (zero to keep forever)")
+	keepLogsByMtime   *time.Duration //= flag.Duration("keep_logs_by_mtime", 0, "keep logs for this long (using mtime) (zero to keep forever)")
+	purgeLogsInterval *time.Duration //= flag.Duration("purge_logs_interval", 1*time.Hour, "how often try to remove old logs")
 )
+
+func init() {
+	zero := time.Duration(0)
+	hour := time.Duration(1 * time.Hour)
+
+	keepLogsByCtime = &zero
+	keepLogsByMtime = &zero
+	purgeLogsInterval = &hour
+}
 
 // parse parses a file name (as used by glog) and returns its process
 // name and timestamp.

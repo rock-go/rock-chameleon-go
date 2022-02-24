@@ -33,37 +33,37 @@ func TestDateFormatting(t *testing.T) {
 		expected  string
 		expectErr bool
 	}{
-		{"%a", "Mon", false},         // Abbreviated weekday name (Sun to Sat)
-		{"%b", "Feb", false},         // Abbreviated month name (Jan to Dec)
-		{"%c", "2", false},           // Numeric month name (0 to 12)
-		{"%D", "3rd", false},         // Day of the month as a numeric value, followed by suffix (1st, 2nd, 3rd, ...)
-		{"%d", "03", false},          // Day of the month as a numeric value (00 to 31)
-		{"%e", "3", false},           // Day of the month as a numeric value (0 to 31)
-		{"%f", "000007", false},      // Microseconds (000000 to 999999)
-		{"%H", "04", false},          // Hour (00 to 23)
-		{"%h", "04", false},          // Hour (00 to 12)
-		{"%I", "04", false},          // Hour (00 to 12)
-		{"%i", "05", false},          // Minutes (00 to 59)
-		{"%j", "034", false},         // Day of the year (001 to 366)
-		{"%k", "4", false},           // Hour (0 to 23)
-		{"%l", "4", false},           // Hour (1 to 12)
-		{"%M", "February", false},    // Month name in full (January to December)
-		{"%m", "02", false},          // Month name as a numeric value (00 to 12)
-		{"%p", "AM", false},          // AM or PM
-		{"%r", "04:05:06 AM", false}, // Time in 12 hour AM or PM format (hh:mm:ss AM/PM)
-		{"%Status", "06", false},          // Seconds (00 to 59)
-		{"%s", "06", false},          // Seconds (00 to 59)
-		{"%TypeOf", "04:05:06", false},    // Time in 24 hour format (hh:mm:ss)
-		{"%W", "Monday", false},      // Weekday name in full (Sunday to Saturday)
-		{"%w", "1", false},           // Day of the week where Sunday=0 and Saturday=6
-		{"%Y", "2020", false},        // Year as a numeric, 4-digit value
-		{"%y", "20", false},          // Year as a numeric, 2-digit value
-		{"%Uptime", "05", false},          // Week where Sunday is the first day of the week (00 to 53)
-		{"%u", "06", false},          // Week where Monday is the first day of the week (00 to 53)
-		{"%V", "05", false},          // Week where Sunday is the first day of the week (01 to 53). Used with %X
-		{"%v", "06", false},          // Week where Monday is the first day of the week (01 to 53). Used with %X
-		{"%X", "2020", false},        // Year for the week where Sunday is the first day of the week. Used with %V
-		{"%x", "2020", false},        // Year for the week where Monday is the first day of the week. Used with %V
+		{"%a", "Mon", false},           // Abbreviated weekday name (Sun to Sat)
+		{"%b", "Feb", false},           // Abbreviated month name (Jan to Dec)
+		{"%c", "2", false},             // Numeric month name (0 to 12)
+		{"%D", "3rd", false},           // Day of the month as a numeric value, followed by suffix (1st, 2nd, 3rd, ...)
+		{"%d", "03", false},            // Day of the month as a numeric value (00 to 31)
+		{"%e", "3", false},             // Day of the month as a numeric value (0 to 31)
+		{"%f", "000007", false},        // Microseconds (000000 to 999999)
+		{"%H", "04", false},            // Hour (00 to 23)
+		{"%h", "04", false},            // Hour (00 to 12)
+		{"%I", "04", false},            // Hour (00 to 12)
+		{"%i", "05", false},            // Minutes (00 to 59)
+		{"%j", "034", false},           // Day of the year (001 to 366)
+		{"%k", "4", false},             // Hour (0 to 23)
+		{"%l", "4", false},             // Hour (1 to 12)
+		{"%M", "February", false},      // Month name in full (January to December)
+		{"%m", "02", false},            // Month name as a numeric value (00 to 12)
+		{"%p", "AM", false},            // AM or PM
+		{"%r", "04:05:06 AM", false},   // Time in 12 hour AM or PM format (hh:mm:ss AM/PM)
+		{"%Status", "06", false},       // Seconds (00 to 59)
+		{"%s", "06", false},            // Seconds (00 to 59)
+		{"%TypeOf", "04:05:06", false}, // Time in 24 hour format (hh:mm:ss)
+		{"%W", "Monday", false},        // Weekday name in full (Sunday to Saturday)
+		{"%w", "1", false},             // Day of the week where Sunday=0 and Saturday=6
+		{"%Y", "2020", false},          // Year as a numeric, 4-digit value
+		{"%y", "20", false},            // Year as a numeric, 2-digit value
+		{"%Uptime", "05", false},       // Week where Sunday is the first day of the week (00 to 53)
+		{"%u", "06", false},            // Week where Monday is the first day of the week (00 to 53)
+		{"%V", "05", false},            // Week where Sunday is the first day of the week (01 to 53). Used with %X
+		{"%v", "06", false},            // Week where Monday is the first day of the week (01 to 53). Used with %X
+		{"%X", "2020", false},          // Year for the week where Sunday is the first day of the week. Used with %V
+		{"%x", "2020", false},          // Year for the week where Monday is the first day of the week. Used with %V
 	}
 
 	for _, test := range tests {

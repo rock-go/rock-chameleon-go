@@ -82,12 +82,11 @@ func (h *Handler) SetCodeVM(fn func() string) {
 
 // NewConnection reports that a new connection has been established.
 func (h *Handler) NewConnection(c *mysql.Conn) {
-	audit.NewEvent("chameleon",
-		audit.From(h.CodeVM()),
-		audit.Subject("honey mysql conn"),
-		audit.Remote(c.Conn.RemoteAddr().String()),
-		audit.Msg("client id: %d" , c.ConnectionID),
-		).Put()
+	audit.NewEvent("chameleon").Alert().High().
+		From(h.CodeVM()).
+		Subject("高交互Mysql蜜罐有新的请求").
+		Remote(c.Conn.RemoteAddr()).
+		Msg("client id: %d", c.ConnectionID).Put()
 }
 
 func (h *Handler) ComInitDB(c *mysql.Conn, schemaName string) error {
@@ -118,16 +117,16 @@ func (h *Handler) ComResetConnection(c *mysql.Conn) {
 func (h *Handler) ConnectionClosed(c *mysql.Conn) {
 	ctx, _ := h.sm.NewContextWithQuery(c, "")
 	h.sm.CloseConn(c)
-	ev := audit.NewEvent("chameleon",
-		audit.Subject("honey mysql close"),
-		audit.From(h.CodeVM()),
-		audit.Remote(c.Conn.RemoteAddr().String()))
+	ev := audit.NewEvent("chameleon").Alert().High().
+		Subject("高交互Mysql蜜罐关闭请求").
+		From(h.CodeVM()).
+		Remote(c.Conn.RemoteAddr())
 
 	// If connection was closed, kill its associated queries.
 	h.e.Catalog.ProcessList.Kill(c.ConnectionID)
 	if err := h.e.Catalog.UnlockTables(ctx, c.ConnectionID); err != nil {
-		ev.Set(audit.Msg("unable to unlock tables on session close"))
-		ev.Set(audit.E(err)).Put()
+		ev.Msg("unable to unlock tables on session close")
+		ev.E(err).Put()
 		return
 	}
 
@@ -260,14 +259,14 @@ func (h *Handler) doQuery(
 	var err error
 
 	defer func() {
-		ev := audit.NewEvent("chameleon",
-			audit.Subject("honey mysql query"),
-			audit.From(h.CodeVM()),
-			audit.User(c.User),
-			audit.Remote(c.Conn.RemoteAddr()),
-			audit.Msg("%s", query) )
+		ev := audit.NewEvent("chameleon").Alert().High().
+			Subject("高交互Mysql蜜罐新的查询").
+			From(h.CodeVM()).
+			User(c.User).
+			Remote(c.Conn.RemoteAddr()).
+			Msg("%s", query)
 		if err != nil {
-			ev.Set(audit.E(err)).Put()
+			ev.E(err).Put()
 		} else {
 			ev.Put()
 		}

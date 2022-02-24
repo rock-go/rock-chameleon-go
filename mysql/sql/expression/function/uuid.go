@@ -17,9 +17,9 @@ package function
 import (
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/sqltypes"
 	"github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/query"
-	"github.com/google/uuid"
 
 	"github.com/rock-go/rock-chameleon-go/mysql/sql"
 )

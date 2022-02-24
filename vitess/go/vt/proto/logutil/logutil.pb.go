@@ -7,8 +7,8 @@ import (
 	fmt "fmt"
 	math "math"
 
-	vttime "github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/vttime"
 	proto "github.com/golang/protobuf/proto"
+	vttime "github.com/rock-go/rock-chameleon-go/vitess/go/vt/proto/vttime"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
